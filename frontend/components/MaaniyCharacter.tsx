@@ -150,6 +150,8 @@ export function MaaniyCharacter({
   const [imageReady, setImageReady] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const [canFollowCursor, setCanFollowCursor] = useState(false);
+  const [isButtonHovering, setIsButtonHovering] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const rawLookX = useMotionValue(0);
   const rawLookY = useMotionValue(0);
   const lookX = useSpring(rawLookX, { stiffness: 90, damping: 22, mass: 0.45 });
@@ -177,17 +179,47 @@ export function MaaniyCharacter({
       const centerY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
       const dx = Math.max(-1, Math.min(1, (event.clientX - centerX) / (window.innerWidth * 0.24)));
       const dy = Math.max(-1, Math.min(1, (event.clientY - centerY) / (window.innerHeight * 0.24)));
-      rawLookX.set(dx * 7);
-      rawLookY.set(dy * 5 + pose.pupilY);
+      rawLookX.set(dx * 3);
+      rawLookY.set(dy * 3 + pose.pupilY);
     }
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [canFollowCursor, pose.pupilY, rawLookX, rawLookY]);
 
+  useEffect(() => {
+    function handlePointerOver(event: PointerEvent) {
+      if (event.target instanceof Element && event.target.closest("button, a[role='button'], .button-lift")) {
+        setIsButtonHovering(true);
+      }
+    }
+
+    function handlePointerOut(event: PointerEvent) {
+      if (event.target instanceof Element && event.target.closest("button, a[role='button'], .button-lift")) {
+        setIsButtonHovering(false);
+      }
+    }
+
+    function handleBeforeUnload() {
+      setIsLeaving(true);
+    }
+
+    document.addEventListener("pointerover", handlePointerOver, { passive: true });
+    document.addEventListener("pointerout", handlePointerOut, { passive: true });
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener("pointerover", handlePointerOver);
+      document.removeEventListener("pointerout", handlePointerOut);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   const eyeMotion = useMemo(() => ({ x: lookX, y: lookY }), [lookX, lookY]);
   const showImage = imageReady && !imageFailed;
   const bubbleVisible = showBubble && Boolean(activeBubble);
+  const visualPose = isLeaving ? moodConfig.sad : pose;
+  const shouldButtonBounce = isButtonHovering && !shouldReduceMotion;
 
   return (
     <motion.div
@@ -196,11 +228,13 @@ export function MaaniyCharacter({
       initial={shouldReduceMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
       animate={{
         opacity: 1,
-        y: shouldReduceMotion ? 0 : activeMood === "inactive" ? [0, 2, 0] : [0, -6, 0],
+        y: shouldButtonBounce ? [0, -10, 0] : shouldReduceMotion ? 0 : activeMood === "inactive" ? [0, 2, 0] : [0, -6, 0],
         scale: activeMood === "click" ? [1, 1.07, 0.99, 1] : 1,
       }}
       transition={{
-        y: { repeat: shouldReduceMotion ? 0 : Infinity, duration: activeMood === "inactive" ? 5.5 : 4.2, ease: "easeInOut" },
+        y: shouldButtonBounce
+          ? { duration: 0.38, ease: "easeOut" }
+          : { repeat: shouldReduceMotion ? 0 : Infinity, duration: activeMood === "inactive" ? 5.5 : 4.2, ease: "easeInOut" },
         scale: { duration: 0.55, ease: "easeOut" },
         opacity: { duration: 0.2 },
       }}
@@ -243,78 +277,95 @@ export function MaaniyCharacter({
         className={`relative z-10 h-full w-full drop-shadow-[0_32px_70px_rgba(34,211,238,0.32)] transition-opacity duration-300 ${showImage ? "opacity-0" : "opacity-100"}`}
       >
         <defs>
-          <linearGradient id="maaniyHair" x1="70" x2="190" y1="30" y2="140">
-            <stop stopColor="#020617" />
-            <stop offset="0.55" stopColor="#0f172a" />
-            <stop offset="1" stopColor="#164e63" />
+          <linearGradient id="maaniyHair" x1="72" x2="192" y1="30" y2="138">
+            <stop stopColor="#120b08" />
+            <stop offset="0.55" stopColor="#1f1714" />
+            <stop offset="1" stopColor="#020617" />
           </linearGradient>
-          <linearGradient id="maaniyHoodie" x1="66" x2="194" y1="184" y2="304">
-            <stop stopColor="#071126" />
-            <stop offset="0.64" stopColor="#101a45" />
-            <stop offset="1" stopColor="#0e7490" />
+          <linearGradient id="maaniyJacket" x1="64" x2="196" y1="204" y2="306">
+            <stop stopColor="#020617" />
+            <stop offset="0.7" stopColor="#111827" />
+            <stop offset="1" stopColor="#0f172a" />
           </linearGradient>
           <radialGradient id="maaniyEye" cx="50%" cy="44%" r="70%">
-            <stop stopColor="#ecfeff" />
-            <stop offset="0.45" stopColor="#22d3ee" />
-            <stop offset="1" stopColor="#0e7490" />
+            <stop stopColor="#fef3c7" />
+            <stop offset="0.42" stopColor="#8b5e34" />
+            <stop offset="1" stopColor="#2b1608" />
           </radialGradient>
         </defs>
 
-        <motion.g animate={{ rotate: pose.bodyTilt }} style={{ originX: "130px", originY: "228px" }} transition={{ duration: 0.35 }}>
-          <path d="M66 292 C72 226 94 188 130 188 C166 188 188 226 194 292 C160 310 100 310 66 292Z" fill="url(#maaniyHoodie)" />
-          <path d="M88 218 C104 236 116 246 130 246 C144 246 156 236 172 218 L188 292 C152 306 108 306 72 292Z" fill="#0f172a" opacity="0.84" />
-          <path d="M101 213 C112 230 122 238 130 238 C138 238 148 230 159 213" fill="none" stroke="#67e8f9" strokeWidth="4" strokeLinecap="round" />
-          <path d="M86 233 C74 242 65 259 61 282" fill="none" stroke="#22d3ee" strokeWidth="5" strokeLinecap="round" opacity="0.6" />
-          <path d="M174 233 C186 242 195 259 199 282" fill="none" stroke="#a78bfa" strokeWidth="5" strokeLinecap="round" opacity="0.55" />
-
-          <motion.g animate={{ y: -pose.armLift }} transition={{ duration: 0.35 }}>
-            <path d="M90 246 C72 250 58 264 54 284" fill="none" stroke="#0f172a" strokeWidth="16" strokeLinecap="round" />
-            <path d="M170 246 C188 250 202 264 206 284" fill="none" stroke="#0f172a" strokeWidth="16" strokeLinecap="round" />
-          </motion.g>
-
-          <path d="M92 205 C104 184 156 184 168 205 C160 226 100 226 92 205Z" fill="#e9b98f" />
-          <path d="M89 210 C94 196 104 188 116 186 C120 207 140 207 144 186 C156 188 166 196 171 210 C154 226 106 226 89 210Z" fill="#0f172a" opacity="0.28" />
-
-          <path d="M84 222 C96 210 112 205 130 205 C148 205 164 210 176 222" fill="none" stroke="#0f172a" strokeWidth="13" strokeLinecap="round" />
-          <circle cx="92" cy="222" r="14" fill="#111827" stroke="#67e8f9" strokeWidth="4" />
-          <circle cx="168" cy="222" r="14" fill="#111827" stroke="#67e8f9" strokeWidth="4" />
-          <path d="M106 224 C118 232 142 232 154 224" fill="none" stroke="#67e8f9" strokeWidth="4" strokeLinecap="round" />
+        <motion.g animate={{ rotate: visualPose.bodyTilt }} style={{ originX: "130px", originY: "246px" }} transition={{ duration: 0.35 }}>
+          <path d="M73 300 C76 246 94 211 130 211 C166 211 184 246 187 300 C156 315 104 315 73 300Z" fill="url(#maaniyJacket)" />
+          <path d="M98 218 C109 234 120 242 130 242 C140 242 151 234 162 218" fill="none" stroke="#1f2937" strokeWidth="18" strokeLinecap="round" />
+          <path d="M130 222 L130 302" fill="none" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round" opacity="0.9" />
+          <path d="M128 244 L122 251 M132 244 L138 251" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
+          <path d="M94 246 C80 250 70 264 66 287" fill="none" stroke="#020617" strokeWidth="17" strokeLinecap="round" />
+          <path d="M166 246 C180 250 190 264 194 287" fill="none" stroke="#020617" strokeWidth="17" strokeLinecap="round" />
+          <path d="M86 282 C96 276 105 276 114 282" fill="none" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" opacity="0.75" />
+          <path d="M146 282 C155 276 164 276 174 282" fill="none" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" opacity="0.75" />
+          <path d="M89 228 C100 214 116 208 130 208 C144 208 160 214 171 228" fill="none" stroke="#0f172a" strokeWidth="15" strokeLinecap="round" />
+          <circle cx="94" cy="230" r="15" fill="#0f172a" stroke="#2563eb" strokeWidth="5" />
+          <circle cx="166" cy="230" r="15" fill="#0f172a" stroke="#2563eb" strokeWidth="5" />
+          <path d="M108 232 C120 240 140 240 152 232" fill="none" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" />
         </motion.g>
 
         <motion.g
-          animate={{ rotate: pose.headTilt }}
-          style={{ originX: "130px", originY: "132px" }}
+          animate={{ rotate: visualPose.headTilt }}
+          style={{ originX: "130px", originY: "122px" }}
           transition={{ type: "spring", stiffness: 180, damping: 18 }}
         >
-          <path d="M76 119 C76 75 98 50 130 50 C162 50 184 75 184 119 C184 161 162 189 130 189 C98 189 76 161 76 119Z" fill="#f0c29b" />
-          <path d="M76 116 C72 76 94 44 128 39 C166 34 190 62 188 111 C178 83 154 78 128 79 C104 80 88 90 76 116Z" fill="url(#maaniyHair)" />
-          <path d="M88 91 C101 66 126 55 157 63 C144 71 126 76 102 77 C100 86 96 92 88 91Z" fill="#111827" opacity="0.92" />
-          <path d="M143 58 C164 62 176 75 181 96 C165 83 151 78 132 79 C137 73 141 66 143 58Z" fill="#164e63" opacity="0.82" />
+          <ellipse cx="130" cy="122" rx="72" ry="78" fill="#f3c7a3" />
+          <path d="M61 118 C57 109 61 100 69 101 C75 102 79 111 77 121" fill="#f3c7a3" />
+          <path d="M199 118 C203 109 199 100 191 101 C185 102 181 111 183 121" fill="#f3c7a3" />
+          <path d="M59 111 C62 65 91 34 129 32 C172 30 201 63 199 112 C188 86 168 72 141 72 C124 72 111 78 99 89 C84 89 70 96 59 111Z" fill="url(#maaniyHair)" />
+          <path d="M88 72 C100 47 125 36 157 42 C145 54 128 63 106 66 C101 76 96 82 88 72Z" fill="#1f1714" />
+          <path d="M121 48 C112 66 103 78 90 88 C107 87 122 80 134 68Z" fill="#2a1c17" />
+          <path d="M148 43 C171 50 187 68 193 94 C175 79 157 72 133 72 C141 62 146 53 148 43Z" fill="#0f172a" opacity="0.86" />
+          <path d="M74 94 C86 76 104 68 126 69 C111 79 94 87 74 94Z" fill="#120b08" opacity="0.78" />
 
-          <path d="M84 123 C75 121 69 128 71 139 C73 151 82 155 88 149" fill="#f0c29b" />
-          <path d="M176 123 C185 121 191 128 189 139 C187 151 178 155 172 149" fill="#f0c29b" />
-
+          <ellipse cx="105" cy="124" rx="15" ry="17" fill="#fff7ed" />
+          <ellipse cx="155" cy="124" rx="15" ry="17" fill="#fff7ed" />
           <motion.g style={eyeMotion}>
-            <ellipse cx="111" cy="127" rx="11" ry="13" fill="#f8fafc" />
-            <ellipse cx="149" cy="127" rx="11" ry="13" fill="#f8fafc" />
-            <circle cx="111" cy="128" r="6" fill="url(#maaniyEye)" />
-            <circle cx="149" cy="128" r="6" fill="url(#maaniyEye)" />
-            <circle cx="113" cy="126" r="2" fill="#fff" opacity={0.95} />
-            <circle cx="151" cy="126" r="2" fill="#fff" opacity={0.95} />
+            <circle cx="105" cy="125" r="8" fill="url(#maaniyEye)" />
+            <circle cx="155" cy="125" r="8" fill="url(#maaniyEye)" />
+            <circle cx="108" cy="121" r="3" fill="#fff" opacity={0.98} />
+            <circle cx="158" cy="121" r="3" fill="#fff" opacity={0.98} />
           </motion.g>
 
-          <motion.path d="M98 109 C106 105 115 105 123 109" fill="none" stroke="#111827" strokeWidth="4" strokeLinecap="round" animate={{ y: pose.brow }} />
-          <motion.path d="M137 109 C145 105 154 105 162 109" fill="none" stroke="#111827" strokeWidth="4" strokeLinecap="round" animate={{ y: pose.brow }} />
-          <path d="M130 134 C128 142 126 148 122 152 C126 155 133 155 137 152" fill="none" stroke="#d08d6b" strokeWidth="3" strokeLinecap="round" />
-          <motion.path d={pose.mouth} fill="none" stroke="#7f1d1d" strokeWidth="4" strokeLinecap="round" />
-          <motion.ellipse cx="98" cy="146" rx="10" ry="5" fill="#fb7185" opacity={pose.blush} />
-          <motion.ellipse cx="162" cy="146" rx="10" ry="5" fill="#fb7185" opacity={pose.blush} />
+          <motion.path
+            d={isLeaving ? "M91 106 C100 101 111 102 119 109" : "M91 105 C100 100 112 100 121 105"}
+            fill="none"
+            stroke="#1f1714"
+            strokeWidth="4"
+            strokeLinecap="round"
+            animate={{ y: isButtonHovering ? -4 : visualPose.brow }}
+          />
+          <motion.path
+            d={isLeaving ? "M141 109 C149 102 160 101 169 106" : "M139 105 C148 100 160 100 169 105"}
+            fill="none"
+            stroke="#1f1714"
+            strokeWidth="4"
+            strokeLinecap="round"
+            animate={{ y: isButtonHovering ? -4 : visualPose.brow }}
+          />
+          <circle cx="130" cy="144" r="2.4" fill="#b8785d" />
+          <motion.path d={isLeaving ? "M114 164 C124 154 137 154 147 164" : visualPose.mouth} fill="none" stroke="#7f1d1d" strokeWidth="4" strokeLinecap="round" />
+          <motion.ellipse cx="89" cy="151" rx="14" ry="8" fill="#fb7185" opacity={Math.max(0.24, visualPose.blush)} />
+          <motion.ellipse cx="171" cy="151" rx="14" ry="8" fill="#fb7185" opacity={Math.max(0.24, visualPose.blush)} />
 
-          <path d="M92 122 C101 115 120 115 126 122" fill="none" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
-          <path d="M134 122 C140 115 159 115 168 122" fill="none" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
-          <path d="M126 122 L134 122" fill="none" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
-          <motion.circle cx="111" cy="128" r="18" fill="#22d3ee" opacity={pose.eyeGlow * 0.12} />
-          <motion.circle cx="149" cy="128" r="18" fill="#22d3ee" opacity={pose.eyeGlow * 0.12} />
+          <circle cx="105" cy="124" r="22" fill="none" stroke="#2a1c17" strokeWidth="3" />
+          <circle cx="155" cy="124" r="22" fill="none" stroke="#2a1c17" strokeWidth="3" />
+          <path d="M127 124 L133 124" fill="none" stroke="#2a1c17" strokeWidth="3" strokeLinecap="round" />
+          <path d="M83 121 C88 116 91 116 94 118" fill="none" stroke="#2a1c17" strokeWidth="3" strokeLinecap="round" />
+          <path d="M177 121 C172 116 169 116 166 118" fill="none" stroke="#2a1c17" strokeWidth="3" strokeLinecap="round" />
+          <motion.circle cx="105" cy="125" r="23" fill="#22d3ee" opacity={visualPose.eyeGlow * 0.07} />
+          <motion.circle cx="155" cy="125" r="23" fill="#22d3ee" opacity={visualPose.eyeGlow * 0.07} />
+          {isLeaving ? (
+            <g>
+              <path d="M91 145 C86 154 85 162 89 169 C94 162 96 154 91 145Z" fill="#67e8f9" opacity="0.92" />
+              <path d="M169 145 C164 154 163 162 167 169 C172 162 174 154 169 145Z" fill="#67e8f9" opacity="0.92" />
+            </g>
+          ) : null}
         </motion.g>
       </motion.svg>
     </motion.div>
