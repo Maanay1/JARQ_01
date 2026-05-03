@@ -1,0 +1,194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --jarq-bg: #050b1a;
+  --jarq-bg-2: #0b1025;
+  --jarq-text: #f8fafc;
+  --jarq-muted: rgba(226, 232, 240, 0.72);
+  --jarq-soft: rgba(255, 255, 255, 0.1);
+  --jarq-softer: rgba(255, 255, 255, 0.06);
+  --jarq-border: rgba(255, 255, 255, 0.15);
+  --jarq-card-shadow: 0 24px 90px rgba(34, 211, 238, 0.13);
+}
+
+:root[data-jarq-theme="day"] {
+  color-scheme: light;
+  --jarq-bg: #dbeafe;
+  --jarq-bg-2: #eef2ff;
+  --jarq-text: #0f172a;
+  --jarq-muted: rgba(30, 41, 59, 0.72);
+  --jarq-soft: rgba(255, 255, 255, 0.58);
+  --jarq-softer: rgba(255, 255, 255, 0.34);
+  --jarq-border: rgba(15, 23, 42, 0.14);
+  --jarq-card-shadow: 0 24px 80px rgba(15, 23, 42, 0.14);
+}
+
+:root[data-jarq-theme="night"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--jarq-bg);
+  color: var(--jarq-text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@keyframes page-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes page-rise-soft {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes glow-breathe {
+  0%,
+  100% {
+    box-shadow: 0 14px 38px rgba(23, 23, 23, 0.08);
+  }
+  50% {
+    box-shadow: 0 18px 48px rgba(80, 212, 186, 0.18);
+  }
+}
+
+@keyframes xp-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.8);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-18px) scale(1);
+  }
+}
+
+@keyframes orbit-soft {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.page-enter-home {
+  animation: page-fade-slide 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.page-enter-chat {
+  animation: page-rise-soft 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.page-enter-courses {
+  animation: page-fade-slide 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.page-enter-lesson {
+  animation: page-rise-soft 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.message-in {
+  animation: message-in 260ms ease-out both;
+}
+
+.soft-glow {
+  animation: glow-breathe 4s ease-in-out infinite;
+}
+
+.button-lift {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.button-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(23, 23, 23, 0.12);
+}
+
+.button-lift:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.xp-pop {
+  animation: xp-pop 900ms ease-out both;
+}
+
+.avatar-orbit {
+  animation: orbit-soft 8s linear infinite;
+}
+
+.jarq-text {
+  color: var(--jarq-text);
+}
+
+.jarq-muted {
+  color: var(--jarq-muted);
+}
+
+.jarq-glass {
+  border: 1px solid var(--jarq-border);
+  background: var(--jarq-soft);
+  box-shadow: var(--jarq-card-shadow);
+  backdrop-filter: blur(22px);
+}
+
+.jarq-soft {
+  background: var(--jarq-softer);
+}
+
+.jarq-border {
+  border-color: var(--jarq-border);
+}
+
+.jarq-title-gradient {
+  background: linear-gradient(90deg, var(--jarq-text), #a5f3fc 48%, #d8b4fe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

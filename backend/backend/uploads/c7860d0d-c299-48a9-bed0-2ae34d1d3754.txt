@@ -1,0 +1,3 @@
+Voice style: soft, warm, gentle, supportive female tutor voice; prepared for a softer ElevenLabs-style voice later
+
+OpenAI API key is not configured. Add OPENAI_API_KEY to backend/.env.
