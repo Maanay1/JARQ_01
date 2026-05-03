@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 type MotionPageProps = {
   children: ReactNode;
@@ -17,12 +17,14 @@ const variants = {
 };
 
 export function MotionPage({ children, variant = "home", className = "" }: MotionPageProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.div
       className={className}
-      initial={variants[variant]}
+      initial={shouldReduceMotion ? false : variants[variant]}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: shouldReduceMotion ? 0.01 : 0.55, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>

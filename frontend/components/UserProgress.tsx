@@ -45,9 +45,9 @@ export function UserProgress({ userId = "00000000-0000-0000-0000-000000000000" }
   const xpPercent = progress ? progress.xp % 100 : 0;
 
   return (
-    <section className="border-t pt-4 jarq-border">
-      <div className="flex items-center justify-between gap-3">
-        <div>
+    <section className="min-w-0 border-t pt-4 jarq-border">
+      <div className="flex min-w-0 items-center justify-between gap-3">
+        <div className="min-w-0">
           <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-coral">
             <Sparkles size={15} />
             Прогресс
@@ -61,7 +61,7 @@ export function UserProgress({ userId = "00000000-0000-0000-0000-000000000000" }
 
       {progress ? (
         <>
-          <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="mt-5 grid grid-cols-2 gap-2 sm:gap-3">
             <Stat icon={<GraduationCap size={18} />} label="Уровень" value={String(progress.level)} />
             <Stat icon={<Trophy size={18} />} label="XP" value={String(progress.xp)} />
             <Stat icon={<Flame size={18} />} label="Серия" value={`${progress.streak} дн.`} />
@@ -69,7 +69,7 @@ export function UserProgress({ userId = "00000000-0000-0000-0000-000000000000" }
           </div>
 
           <div className="mt-5">
-            <div className="flex justify-between text-xs font-semibold uppercase tracking-[0.12em] jarq-muted">
+            <div className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] jarq-muted sm:flex-row sm:justify-between">
               <span>Следующий уровень</span>
               <span>осталось {xpToNextLevel} XP</span>
             </div>
@@ -106,7 +106,7 @@ export function UserProgress({ userId = "00000000-0000-0000-0000-000000000000" }
             <div className="mt-2 space-y-2">
               {progress.latest_mistakes.length ? (
                 progress.latest_mistakes.slice(0, 3).map((mistake) => (
-                  <div key={mistake.id} className="rounded-md border p-3 jarq-border jarq-soft">
+                  <div key={mistake.id} className="min-w-0 rounded-md border p-3 jarq-border jarq-soft">
                     <div className="text-xs font-semibold jarq-muted">{mistake.subject ?? "Практика"}</div>
                     <div className="mt-1 text-sm">{mistake.mistake}</div>
                     {mistake.correction ? (
@@ -127,7 +127,7 @@ export function UserProgress({ userId = "00000000-0000-0000-0000-000000000000" }
 
 function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-md p-3 jarq-soft">
+    <div className="min-w-0 rounded-md p-3 jarq-soft">
       <div className="flex items-center gap-2 jarq-muted">
         {icon}
         <span className="text-xs font-semibold uppercase tracking-[0.12em]">{label}</span>

@@ -65,24 +65,24 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   }
 
   return (
-    <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_320px]">
-      <section className="soft-glow rounded-2xl p-6 jarq-glass">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
+    <div className="mt-5 grid min-w-0 gap-4 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-5">
+      <section className="soft-glow min-w-0 rounded-xl p-4 jarq-glass sm:rounded-2xl sm:p-6">
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <div className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">Задание {questLabel}</div>
             <div className="mt-3 inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] jarq-muted jarq-soft">
               <Code2 size={15} />
               {taskTypeLabel(currentTask.type)}
             </div>
           </div>
-          <div className="relative inline-flex items-center gap-2 rounded-md bg-cyan-300/20 px-3 py-2 text-sm font-semibold text-cyan-100">
+          <div className="relative inline-flex w-fit items-center gap-2 rounded-md bg-cyan-300/20 px-3 py-2 text-sm font-semibold text-cyan-100">
             <Trophy size={17} />
             {xp} XP
             {xpBurst ? <span className="xp-pop absolute -top-7 right-0 text-sm font-bold text-cyan-200">+{xpBurst}</span> : null}
           </div>
         </div>
 
-        <div className="mt-5 h-3 overflow-hidden rounded-full jarq-soft">
+        <div className="mt-5 h-3 w-full overflow-hidden rounded-full jarq-soft">
           <motion.div
             className="h-full rounded-full bg-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.45)]"
             initial={{ width: 0 }}
@@ -91,19 +91,19 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           />
         </div>
 
-        <div className="mt-6 rounded-2xl border p-5 backdrop-blur jarq-border jarq-soft">
-          <h2 className="whitespace-pre-line text-xl font-semibold leading-8">{currentTask.question}</h2>
+        <div className="mt-6 min-w-0 rounded-xl border p-4 backdrop-blur jarq-border jarq-soft sm:rounded-2xl sm:p-5">
+          <h2 className="whitespace-pre-line text-lg font-semibold leading-7 sm:text-xl sm:leading-8">{currentTask.question}</h2>
         </div>
 
         <form onSubmit={handleCheck} className="mt-6">
           {options.length ? (
-            <div className="mb-4 grid gap-2 sm:grid-cols-3">
+            <div className="mb-4 grid gap-2 md:grid-cols-3">
               {options.map((option) => (
                 <button
                   key={option.value}
                   type="button"
                   onClick={() => setAnswer(option.value)}
-                  className={`button-lift rounded-md border px-3 py-3 text-left text-sm font-semibold ${
+                  className={`button-lift min-h-11 min-w-0 rounded-md border px-3 py-3 text-left text-sm font-semibold ${
                     answer === option.value ? "border-cyan-300 bg-cyan-300/15" : "hover:border-cyan-300 jarq-border jarq-soft"
                   }`}
                 >
@@ -116,13 +116,13 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
             value={answer}
             onChange={(event) => setAnswer(event.target.value)}
             rows={5}
-            className="w-full resize-none rounded-xl border px-4 py-3 text-base outline-none transition focus:border-cyan-300 jarq-border jarq-text jarq-soft placeholder:text-slate-400"
+            className="w-full min-w-0 resize-none rounded-xl border px-4 py-3 text-base outline-none transition focus:border-cyan-300 jarq-border jarq-text jarq-soft placeholder:text-slate-400"
             placeholder={currentTask.type === "write_code" ? "Напиши код..." : "Напиши ответ..."}
           />
           <button
             type="submit"
             disabled={isChecking || !answer.trim()}
-            className="button-lift mt-3 inline-flex h-11 items-center gap-2 rounded-md bg-cyan-300 px-4 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="button-lift mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-cyan-300 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {isChecking ? <Loader2 className="animate-spin" size={17} /> : <Check size={17} />}
             Проверить ответ
@@ -131,7 +131,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
 
         {result ? (
           <div
-            className={`message-in mt-5 rounded-lg border p-4 ${
+            className={`message-in mt-5 min-w-0 rounded-lg border p-4 ${
               result.correct ? "border-cyan-300 bg-cyan-300/15" : "border-purple-300 bg-purple-400/10"
             }`}
           >
@@ -147,14 +147,14 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           type="button"
           onClick={nextQuestion}
           disabled={!result || taskIndex === tasks.length - 1}
-          className="button-lift mt-4 inline-flex h-11 items-center gap-2 rounded-md border px-4 text-sm font-semibold transition hover:border-cyan-300 disabled:cursor-not-allowed disabled:opacity-50 jarq-border jarq-soft"
+          className="button-lift mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold transition hover:border-cyan-300 disabled:cursor-not-allowed disabled:opacity-50 jarq-border jarq-soft sm:w-auto"
         >
           Следующее задание
           <ArrowRight size={16} />
         </button>
       </section>
 
-      <aside className="rounded-2xl p-5 jarq-glass">
+      <aside className="min-w-0 rounded-xl p-4 jarq-glass sm:rounded-2xl sm:p-5">
         <JarqAvatar emotion={emotion} speaking={isChecking} processing={isChecking} />
         <div className="message-in mt-5 rounded-md p-3 jarq-soft">
           <div className="text-xs font-semibold uppercase tracking-[0.12em] jarq-muted">Реакция JARQ</div>

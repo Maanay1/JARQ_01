@@ -159,14 +159,14 @@ export function VoiceChat({
   }
 
   return (
-    <section className="border-t pt-4 jarq-border">
-      <div className="flex items-center justify-between gap-3">
-        <div>
+    <section className="min-w-0 border-t pt-4 jarq-border">
+      <div className="flex min-w-0 items-center justify-between gap-3">
+        <div className="min-w-0">
           <h2 className="text-base font-semibold">Голосовой чат</h2>
           <p className="text-sm jarq-muted">{statusLabel[status]}</p>
         </div>
         <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+          className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
             response ? emotionClass[response.jarq.emotion] ?? "jarq-soft jarq-text" : "jarq-soft jarq-muted"
           }`}
         >
@@ -180,7 +180,7 @@ export function VoiceChat({
         </div>
       ) : null}
 
-      <div className="mt-4">
+      <div className="mt-4 hidden sm:block">
         <JarqAvatar
           emotion={currentEmotion}
           speaking={status === "speaking"}
@@ -189,25 +189,25 @@ export function VoiceChat({
         />
       </div>
 
-      <div className="mt-5 grid place-items-center">
+      <div className="mt-4 grid place-items-center sm:mt-5">
         <button
           type="button"
           onClick={toggleRecording}
           disabled={isBusy}
           title={status === "recording" ? "Остановить запись" : "Начать запись"}
-          className={`button-lift relative grid h-24 w-24 place-items-center rounded-full text-white shadow-soft transition ${
+          className={`button-lift relative grid h-16 w-16 place-items-center rounded-full text-white shadow-soft transition sm:h-24 sm:w-24 ${
             status === "recording" ? "bg-coral" : "bg-ink hover:bg-ink/90"
           } disabled:cursor-not-allowed disabled:opacity-70`}
         >
           {status === "recording" ? (
             <>
-              <span className="absolute h-24 w-24 animate-ping rounded-full bg-coral/35" />
-              <Square className="relative" size={30} />
+              <span className="absolute h-16 w-16 animate-ping rounded-full bg-coral/35 sm:h-24 sm:w-24" />
+              <Square className="relative" size={24} />
             </>
           ) : status === "processing" ? (
-            <Loader2 className="animate-spin" size={30} />
+            <Loader2 className="animate-spin" size={26} />
           ) : (
-            <Mic size={32} />
+            <Mic size={28} />
           )}
         </button>
       </div>
@@ -221,7 +221,7 @@ export function VoiceChat({
 
       <div className="mt-5 space-y-3">
         {response?.transcript ? (
-          <div className="rounded-md p-3 jarq-soft">
+          <div className="min-w-0 rounded-md p-3 jarq-soft">
             <div className="text-xs font-semibold uppercase tracking-[0.12em] jarq-muted">Расшифровка</div>
             <p className="mt-1 text-sm leading-6">{response.transcript}</p>
           </div>
@@ -229,7 +229,7 @@ export function VoiceChat({
 
         {response?.jarq.text ? (
           <div className="rounded-md border p-3 jarq-border">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
               <div className="text-xs font-semibold uppercase tracking-[0.12em] jarq-muted">
                 JARQ · {response.jarq.tone}
               </div>

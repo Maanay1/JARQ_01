@@ -15,22 +15,22 @@ export default async function LessonPage({ params }: LessonPageProps) {
   const lesson = await getLesson(lessonId);
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-4 py-6 jarq-text sm:px-6 lg:px-8">
+    <main className="relative min-h-screen overflow-x-hidden px-4 py-20 jarq-text sm:px-6 sm:py-6 lg:px-8">
       <FuturisticBackground />
       <ExperienceControls />
       <MotionPage variant="lesson" className="relative z-10">
-      <section className="mx-auto max-w-5xl">
+      <section className="mx-auto max-w-5xl min-w-0">
         <Link
           href={lesson.course_id ? `/courses/${lesson.course_id}` : "/courses"}
-          className="inline-flex items-center gap-2 text-sm font-semibold jarq-muted hover:text-cyan-200"
+          className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold jarq-muted hover:text-cyan-200"
         >
           <ArrowLeft size={16} />
           Уроки
         </Link>
 
-        <header className="mt-5 border-b pb-5 jarq-border">
+        <header className="mt-5 min-w-0 border-b pb-5 jarq-border">
           <div className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan-200">Интерактивный урок</div>
-          <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">{lesson.title}</h1>
+          <h1 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl">{lesson.title}</h1>
         </header>
 
         <LessonRunner lesson={lesson} />

@@ -152,17 +152,17 @@ export function TutorShell() {
   }
 
   return (
-    <main className={`relative min-h-screen overflow-hidden ${isNight ? "text-white" : "text-slate-950"}`}>
+    <main className={`relative min-h-screen overflow-x-hidden ${isNight ? "text-white" : "text-slate-950"}`}>
       <FuturisticBackground />
       <IntroScreen />
       <ExperienceControls />
       <MotionPage variant="chat" className="relative z-10">
-      <section className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-4 border-b pb-4 md:flex-row md:items-center md:justify-between jarq-border">
-          <div>
+      <section className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-20 sm:px-6 sm:py-6 lg:px-8">
+        <header className="flex min-w-0 flex-col gap-4 border-b pb-4 md:flex-row md:items-center md:justify-between jarq-border">
+          <div className="min-w-0">
             <Link
               href="/"
-              className="button-lift mb-4 inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold jarq-glass"
+              className="button-lift mb-4 inline-flex min-h-10 max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold jarq-glass"
             >
               <ArrowLeft size={16} />
               {copy.back}
@@ -171,12 +171,12 @@ export function TutorShell() {
               <Sparkles size={16} />
               JARQ AI-репетитор
             </div>
-            <h1 className="jarq-title-gradient mt-2 max-w-3xl text-3xl font-semibold leading-tight sm:text-5xl">
+            <h1 className="jarq-title-gradient mt-2 max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
               {copy.title}
             </h1>
           </div>
 
-          <div className="flex max-w-md flex-wrap items-center justify-end gap-2">
+          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:max-w-md sm:flex-wrap sm:items-center sm:justify-end">
             {providers.map((item) => (
               <motion.button
                 key={item.id}
@@ -185,7 +185,7 @@ export function TutorShell() {
                 whileTap={{ scale: 0.94 }}
                 onMouseEnter={() => triggerHana("happy", null)}
                 onClick={() => setProvider(item.id)}
-                className={`button-lift h-11 rounded-xl border px-4 text-sm font-bold backdrop-blur-xl transition ${
+                className={`button-lift min-h-11 min-w-0 rounded-xl border px-3 py-2 text-sm font-bold backdrop-blur-xl transition sm:px-4 ${
                   provider === item.id
                     ? "border-cyan-300 bg-cyan-300 text-slate-950 shadow-[0_0_34px_rgba(34,211,238,0.35)]"
                     : "jarq-text border-white/15 hover:border-cyan-300/70 jarq-soft"
@@ -197,16 +197,16 @@ export function TutorShell() {
           </div>
         </header>
 
-        <div className="grid flex-1 gap-5 py-5 lg:grid-cols-[340px_1fr]">
-          <aside className="soft-glow rounded-2xl p-5 jarq-glass">
-            <div className="mb-5 grid place-items-center">
+        <div className="grid min-w-0 flex-1 gap-4 py-4 lg:grid-cols-[320px_1fr] lg:gap-5 lg:py-5 xl:grid-cols-[340px_1fr]">
+          <aside className="soft-glow min-w-0 rounded-xl p-4 jarq-glass sm:rounded-2xl sm:p-5">
+            <div className="mb-4 grid place-items-center sm:mb-5">
               <HanaCharacter emotion={isSending ? "thinking" : chatMode === "support" ? "happy" : undefined} compact />
             </div>
             <div className="flex items-center gap-2 font-semibold">
               <Brain size={18} />
               {copy.personality}
             </div>
-            <div className="mt-4 grid gap-2">
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
               {personas.map((persona) => (
                 <motion.button
                   key={persona.id}
@@ -215,14 +215,14 @@ export function TutorShell() {
                   whileTap={{ scale: 0.98 }}
                   onMouseEnter={() => triggerHana(persona.id === "jarq_hana" ? "excited" : "happy", null)}
                   onClick={() => setPersonaId(persona.id)}
-                  className={`button-lift rounded-xl border p-3 text-left transition ${
+                  className={`button-lift min-w-0 rounded-xl border p-3 text-left transition ${
                     personaId === persona.id
                       ? "scale-[1.02] border-cyan-300 bg-cyan-300/15 shadow-[0_0_28px_rgba(34,211,238,0.26)]"
                       : "hover:border-cyan-300/60 jarq-border jarq-soft"
                   }`}
                 >
                   <span className="block font-semibold">{persona.label[language]}</span>
-                  <span className="text-sm jarq-muted">{persona.tone[language]}</span>
+                  <span className="block text-sm jarq-muted">{persona.tone[language]}</span>
                 </motion.button>
               ))}
             </div>
@@ -246,10 +246,10 @@ export function TutorShell() {
           </aside>
 
           <section
-            className="flex min-h-[680px] flex-col rounded-2xl jarq-glass"
+            className="flex min-h-[70vh] min-w-0 flex-col rounded-xl jarq-glass sm:rounded-2xl lg:min-h-[680px]"
             onMouseEnter={() => triggerHana("happy", null)}
           >
-            <div className="flex flex-wrap gap-2 border-b p-4 jarq-border">
+            <div className="grid grid-cols-2 gap-2 border-b p-3 jarq-border sm:flex sm:flex-wrap sm:p-4">
               {(["tutor", "support"] as ChatMode[]).map((mode) => (
                 <motion.button
                   key={mode}
@@ -257,7 +257,7 @@ export function TutorShell() {
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => switchMode(mode)}
-                  className={`inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-bold transition ${
+                  className={`inline-flex min-h-10 min-w-0 items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-bold transition sm:px-4 ${
                     chatMode === mode
                       ? "bg-cyan-300 text-slate-950 shadow-[0_0_26px_rgba(34,211,238,0.32)]"
                       : "jarq-text ring-1 jarq-soft"
@@ -268,7 +268,7 @@ export function TutorShell() {
                 </motion.button>
               ))}
             </div>
-            <div className="flex-1 space-y-5 overflow-y-auto scroll-smooth p-5 sm:p-6">
+            <div className="flex-1 space-y-4 overflow-y-auto scroll-smooth p-3 sm:space-y-5 sm:p-6">
               <AnimatePresence initial={false}>
                 {messages.map((message, index) => {
                   const warning = isProviderWarning(message.content);
@@ -278,7 +278,7 @@ export function TutorShell() {
                       initial={{ opacity: 0, y: 12, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.96 }}
-                      className={`max-w-[84%] overflow-hidden rounded-2xl px-5 py-4 text-sm leading-7 shadow-[0_10px_36px_rgba(15,23,42,0.12)] ${
+                      className={`max-w-[94%] overflow-hidden rounded-2xl px-4 py-3 text-sm leading-6 shadow-[0_10px_36px_rgba(15,23,42,0.12)] sm:max-w-[84%] sm:px-5 sm:py-4 sm:leading-7 ${
                         warning
                           ? "border border-amber-300/40 bg-amber-300/12 jarq-text"
                           : message.role === "assistant"
@@ -302,7 +302,7 @@ export function TutorShell() {
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex max-w-[84%] items-center gap-3 rounded-2xl px-5 py-4 text-sm jarq-muted backdrop-blur jarq-soft"
+                className="flex max-w-[94%] items-center gap-3 rounded-2xl px-4 py-3 text-sm jarq-muted backdrop-blur jarq-soft sm:max-w-[84%] sm:px-5 sm:py-4"
                 >
                   <TypingDots />
                   {copy.thinking}
@@ -311,8 +311,8 @@ export function TutorShell() {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSubmit} className="border-t p-4 jarq-border">
-              <div className="flex items-end gap-2">
+            <form onSubmit={handleSubmit} className="sticky bottom-0 border-t bg-[color-mix(in_srgb,var(--jarq-bg)_82%,transparent)] p-3 backdrop-blur-xl jarq-border sm:p-4">
+              <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] items-end gap-2">
                 <button
                   type="button"
                   title="Голосовой ввод"
@@ -324,7 +324,7 @@ export function TutorShell() {
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   rows={2}
-                  className="min-h-11 flex-1 resize-none rounded-xl border px-4 py-3 text-sm outline-none transition focus:border-cyan-300 jarq-border jarq-text jarq-soft placeholder:text-slate-400"
+                  className="min-h-11 w-full resize-none rounded-xl border px-3 py-3 text-sm outline-none transition focus:border-cyan-300 jarq-border jarq-text jarq-soft placeholder:text-slate-400 sm:px-4"
                   placeholder={chatMode === "support" ? copy.placeholderSupport : copy.placeholderTutor}
                 />
                 <button

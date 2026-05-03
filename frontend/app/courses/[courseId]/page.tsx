@@ -14,32 +14,32 @@ export default async function CourseLessonsPage({ params }: CourseLessonsPagePro
   const lessons = await getCourseLessons(courseId);
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-4 py-6 jarq-text sm:px-6 lg:px-8">
+    <main className="relative min-h-screen overflow-x-hidden px-4 py-20 jarq-text sm:px-6 sm:py-6 lg:px-8">
       <FuturisticBackground />
       <ExperienceControls />
       <MotionPage variant="courses" className="relative z-10">
-      <section className="mx-auto max-w-5xl">
-        <Link href="/courses" className="inline-flex items-center gap-2 text-sm font-semibold jarq-muted hover:text-cyan-200">
+      <section className="mx-auto max-w-5xl min-w-0">
+        <Link href="/courses" className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold jarq-muted hover:text-cyan-200">
           <ArrowLeft size={16} />
           Курсы
         </Link>
 
-        <header className="mt-5 border-b pb-5 jarq-border">
+        <header className="mt-5 min-w-0 border-b pb-5 jarq-border">
           <div className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan-200">{courseId}</div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Карта уроков</h1>
         </header>
 
-        <div className="mt-6 grid gap-3">
+        <div className="mt-6 grid min-w-0 gap-3">
           {lessons.map((lesson, index) => (
             <Link
               key={lesson.id}
               href={`/lesson/${lesson.id}`}
-              className="button-lift group grid gap-4 rounded-2xl p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/60 md:grid-cols-[56px_1fr_auto] jarq-glass"
+              className="button-lift group grid min-w-0 gap-4 rounded-xl p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/60 md:grid-cols-[56px_minmax(0,1fr)_auto] md:rounded-2xl jarq-glass"
             >
               <div className="grid h-14 w-14 place-items-center rounded-md bg-cyan-300/20 font-semibold text-cyan-100">
                 {index + 1}
               </div>
-              <div>
+              <div className="min-w-0">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] jarq-muted">
                   {lesson.tasks.length || 1} заданий
                   <CheckCircle2 size={14} className="text-cyan-200" />
@@ -50,7 +50,7 @@ export default async function CourseLessonsPage({ params }: CourseLessonsPagePro
                 </p>
               </div>
               <div className="flex items-center">
-                <span className="inline-flex h-10 items-center gap-2 rounded-md bg-cyan-300 px-3 text-sm font-bold text-slate-950">
+                <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-cyan-300 px-3 py-2 text-sm font-bold text-slate-950 md:w-auto md:min-h-10">
                   <Play size={16} />
                   Старт
                 </span>

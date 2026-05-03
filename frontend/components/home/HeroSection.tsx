@@ -27,8 +27,8 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden border-b jarq-border">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:44px_44px]" />
-      <div className="relative mx-auto grid min-h-[92vh] max-w-6xl items-center gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)] lg:px-8">
-        <div>
+      <div className="relative mx-auto grid min-h-[auto] max-w-6xl items-center gap-7 px-4 py-20 sm:px-6 sm:py-24 lg:min-h-[92vh] lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)] lg:gap-10 lg:px-8 lg:py-8">
+        <div className="min-w-0 text-center lg:text-left">
           <motion.div
             className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 px-3 py-2 text-sm font-semibold text-cyan-200 shadow-[0_0_28px_rgba(34,211,238,0.2)] backdrop-blur-xl jarq-soft"
             initial={{ opacity: 0, y: 12 }}
@@ -38,20 +38,20 @@ export function HeroSection() {
             {language === "ru" ? "Не просто чат. Репетитор с памятью." : "Not just chat. A tutor with memory."}
           </motion.div>
 
-          <h1 className="jarq-title-gradient mt-6 text-6xl font-semibold leading-none sm:text-7xl lg:text-8xl">
+          <h1 className="jarq-title-gradient mt-6 text-4xl font-semibold leading-none sm:text-6xl lg:text-8xl">
             JARQ
           </h1>
-          <p className="jarq-muted mt-5 max-w-2xl text-xl leading-8 sm:text-2xl">
+          <p className="jarq-muted mx-auto mt-5 max-w-2xl text-base leading-7 sm:text-xl sm:leading-8 lg:mx-0 lg:text-2xl">
             {language === "ru"
               ? "AI-репетитор, где Хана ведет тебя через уроки, чат и практику"
               : "An AI tutor where Hana guides you through lessons, chat, and practice"}
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 grid gap-3 sm:mx-auto sm:max-w-md lg:mx-0 lg:flex lg:max-w-none lg:flex-row">
             <Link
               href="/courses"
               {...hoverProps("hover_start_learning")}
-              className="button-lift inline-flex h-12 items-center justify-center gap-2 rounded-md bg-cyan-300 px-5 text-sm font-bold text-slate-950 shadow-[0_0_34px_rgba(34,211,238,0.35)] transition hover:bg-cyan-200"
+              className="button-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-[0_0_34px_rgba(34,211,238,0.35)] transition hover:bg-cyan-200"
             >
               <Wand2 size={18} />
               {text.start}
@@ -59,7 +59,7 @@ export function HeroSection() {
             <Link
               href="/chat"
               {...hoverProps("hover_open_chat")}
-              className="button-lift jarq-text inline-flex h-12 items-center justify-center gap-2 rounded-md px-5 text-sm font-semibold ring-1 backdrop-blur-xl transition hover:bg-white/16 jarq-soft"
+              className="button-lift jarq-text inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold ring-1 backdrop-blur-xl transition hover:bg-white/16 jarq-soft"
             >
               <Bot size={18} />
               {text.chat}
@@ -67,17 +67,17 @@ export function HeroSection() {
             <Link
               href="#voice-demo"
               {...hoverProps("hover_voice")}
-              className="button-lift jarq-text inline-flex h-12 items-center justify-center gap-2 rounded-md border border-purple-300/30 bg-purple-400/10 px-5 text-sm font-semibold backdrop-blur-xl transition hover:border-cyan-300"
+              className="button-lift jarq-text inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-purple-300/30 bg-purple-400/10 px-5 py-3 text-sm font-semibold backdrop-blur-xl transition hover:border-cyan-300"
             >
               <Mic size={18} />
               {language === "ru" ? "Голосовой режим" : "Try voice mode"}
             </Link>
           </div>
-          <div className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
+          <div className="mx-auto mt-7 grid max-w-2xl gap-3 sm:grid-cols-3 lg:mx-0">
             {benefits.map((benefit, index) => (
               <motion.div
                 key={benefit}
-                className="jarq-glass rounded-2xl px-4 py-3 text-sm font-semibold"
+                className="min-w-0 rounded-xl px-4 py-3 text-sm font-semibold jarq-glass"
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.12 + index * 0.08 }}
@@ -88,10 +88,10 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="relative min-h-[470px] overflow-visible sm:min-h-[560px]">
-          <div className="absolute inset-x-4 top-14 h-80 rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.28),rgba(168,85,247,0.16)_42%,transparent_70%)] blur-2xl" />
-          <div className="relative mx-auto flex min-h-[470px] max-w-[460px] flex-col justify-between sm:min-h-[560px]">
-            <div className="flex items-center justify-between rounded-xl border px-4 py-3 backdrop-blur-xl jarq-border jarq-soft">
+        <div className="relative min-h-[360px] min-w-0 overflow-visible sm:min-h-[500px] lg:min-h-[560px]">
+          <div className="absolute inset-x-6 top-16 h-56 rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.22),rgba(168,85,247,0.12)_42%,transparent_70%)] blur-2xl sm:h-80" />
+          <div className="relative mx-auto flex min-h-[360px] max-w-[460px] flex-col justify-between sm:min-h-[500px] lg:min-h-[560px]">
+            <div className="flex min-w-0 items-center justify-between rounded-xl border px-4 py-3 backdrop-blur-xl jarq-border jarq-soft">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">
                   {language === "ru" ? "Главный персонаж" : "Main character"}
@@ -103,8 +103,9 @@ export function HeroSection() {
               </div>
             </div>
 
-            <div className="grid min-h-[390px] place-items-center py-4 sm:min-h-[450px]">
-              <HanaCharacter mood={mood} size="lg" showBubble className="translate-y-2" />
+            <div className="grid min-h-[250px] place-items-center py-4 sm:min-h-[360px] lg:min-h-[450px]">
+              <HanaCharacter mood={mood} size="md" showBubble className="translate-y-2 lg:hidden" />
+              <HanaCharacter mood={mood} size="lg" showBubble className="hidden translate-y-2 lg:block" />
             </div>
 
             <div className="space-y-3 rounded-xl border p-3 backdrop-blur-xl jarq-border jarq-soft">

@@ -174,6 +174,7 @@ export function HanaCharacter({
   const resolvedSize = compact ? "sm" : size;
   const [imageReady, setImageReady] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [canFollowCursor, setCanFollowCursor] = useState(false);
   const rawLookX = useMotionValue(0);
   const rawLookY = useMotionValue(0);
   const lookX = useSpring(rawLookX, { stiffness: 95, damping: 20, mass: 0.45 });
@@ -181,6 +182,20 @@ export function HanaCharacter({
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
+    setCanFollowCursor(media.matches);
+    const handleChange = () => setCanFollowCursor(media.matches);
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (!canFollowCursor) {
+      rawLookX.set(0);
+      rawLookY.set(0);
+      return;
+    }
+
     function handleMouseMove(event: MouseEvent) {
       const rect = rootRef.current?.getBoundingClientRect();
       const centerX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
@@ -193,7 +208,7 @@ export function HanaCharacter({
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [rawLookX, rawLookY]);
+  }, [canFollowCursor, rawLookX, rawLookY]);
 
   const eyeMotion = useMemo(
     () => ({
@@ -236,7 +251,7 @@ export function HanaCharacter({
 
       {showBubble && activeBubble ? (
         <motion.div
-          className="jarq-text absolute -top-4 left-1/2 z-30 w-[min(17rem,92vw)] -translate-x-1/2 rounded-2xl border px-4 py-3 text-center text-sm font-bold leading-5 shadow-[0_20px_60px_rgba(34,211,238,0.26)] backdrop-blur-xl"
+          className="jarq-text absolute -top-2 left-1/2 z-30 w-[min(15rem,82vw)] -translate-x-1/2 rounded-2xl border px-3 py-2 text-center text-xs font-bold leading-5 shadow-[0_20px_60px_rgba(34,211,238,0.26)] backdrop-blur-xl sm:-top-4 sm:w-[min(17rem,92vw)] sm:px-4 sm:py-3 sm:text-sm"
           style={{ background: "color-mix(in srgb, var(--jarq-bg-2) 18%, white 82%)", borderColor: "var(--jarq-border)" }}
           initial={false}
           animate={{ opacity: 1, y: 0, scale: 1 }}
