@@ -3,20 +3,20 @@
 import Link from "next/link";
 import { Bot, Brain, Mic, Sparkles, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { HanaCharacter } from "@/components/HanaCharacter";
+import { MaaniyCharacter } from "@/components/MaaniyCharacter";
 import { uiText, useJarqExperience } from "@/components/JarqExperience";
-import { HanaMood, useHanaInteraction } from "@/components/hana/useHanaInteraction";
+import { MaaniyMood, useMaaniyInteraction } from "@/components/maaniy/useMaaniyInteraction";
 
 export function HeroSection() {
   const { language } = useJarqExperience();
-  const { mood, setMood, resetMood, triggerClick } = useHanaInteraction();
+  const { mood, setMood, resetMood, triggerClick } = useMaaniyInteraction();
   const text = uiText[language];
   const benefits =
     language === "ru"
       ? ["Память ученика", "Живые личности", "Уроки с XP"]
       : ["Learner memory", "Living personas", "XP lessons"];
 
-  function hoverProps(nextMood: HanaMood) {
+  function hoverProps(nextMood: MaaniyMood) {
     return {
       onMouseEnter: () => setMood(nextMood),
       onMouseLeave: resetMood,
@@ -43,14 +43,14 @@ export function HeroSection() {
           </h1>
           <p className="jarq-muted mx-auto mt-5 max-w-2xl text-base leading-7 sm:text-xl sm:leading-8 lg:mx-0 lg:text-2xl">
             {language === "ru"
-              ? "AI-репетитор, где Хана ведет тебя через уроки, чат и практику"
-              : "An AI tutor where Hana guides you through lessons, chat, and practice"}
+              ? "AI-репетитор, где Мааний ведет тебя через уроки, чат и практику"
+              : "An AI tutor where Maaniy guides you through lessons, chat, and practice"}
           </p>
 
           <div className="mt-7 grid gap-3 sm:mx-auto sm:max-w-md lg:mx-0 lg:flex lg:max-w-none lg:flex-row">
             <Link
               href="/courses"
-              {...hoverProps("hover_start_learning")}
+              {...hoverProps("hover")}
               className="button-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-[0_0_34px_rgba(34,211,238,0.35)] transition hover:bg-cyan-200"
             >
               <Wand2 size={18} />
@@ -58,7 +58,7 @@ export function HeroSection() {
             </Link>
             <Link
               href="/chat"
-              {...hoverProps("hover_open_chat")}
+              {...hoverProps("happy")}
               className="button-lift jarq-text inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold ring-1 backdrop-blur-xl transition hover:bg-white/16 jarq-soft"
             >
               <Bot size={18} />
@@ -66,7 +66,7 @@ export function HeroSection() {
             </Link>
             <Link
               href="#voice-demo"
-              {...hoverProps("hover_voice")}
+              {...hoverProps("focused")}
               className="button-lift jarq-text inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-purple-300/30 bg-purple-400/10 px-5 py-3 text-sm font-semibold backdrop-blur-xl transition hover:border-cyan-300"
             >
               <Mic size={18} />
@@ -96,7 +96,7 @@ export function HeroSection() {
                 <div className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">
                   {language === "ru" ? "Главный персонаж" : "Main character"}
                 </div>
-                <div className="mt-1 text-xl font-semibold jarq-text">Hana</div>
+                <div className="mt-1 text-xl font-semibold jarq-text">MAANIY</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-full bg-cyan-300/20 text-cyan-100">
                 <Brain size={22} />
@@ -104,8 +104,13 @@ export function HeroSection() {
             </div>
 
             <div className="grid min-h-[250px] place-items-center py-4 sm:min-h-[360px] lg:min-h-[450px]">
-              <HanaCharacter mood={mood} size="md" showBubble className="translate-y-2 lg:hidden" />
-              <HanaCharacter mood={mood} size="lg" showBubble className="hidden translate-y-2 lg:block" />
+              <MaaniyCharacter
+                mood={mood}
+                size="lg"
+                showBubble
+                message={language === "ru" ? "Привет, я Мааний — твой AI репетитор" : "Hi, I’m Maaniy — your AI tutor"}
+                className="translate-y-2"
+              />
             </div>
 
             <div className="space-y-3 rounded-xl border p-3 backdrop-blur-xl jarq-border jarq-soft">

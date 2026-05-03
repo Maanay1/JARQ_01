@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { HanaCharacter } from "@/components/HanaCharacter";
+import { MaaniyCharacter } from "@/components/MaaniyCharacter";
 import { uiText, useJarqExperience } from "@/components/JarqExperience";
 
 export function IntroScreen() {
@@ -35,7 +35,7 @@ export function IntroScreen() {
             initial={{ y: 28, scale: 0.96 }}
             animate={{ y: 0, scale: 1 }}
           >
-            <HanaCharacter emotion="happy" message={text.intro} />
+            <MaaniyCharacter emotion="happy" message={text.intro} />
             <motion.button
               type="button"
               onClick={closeIntro}
