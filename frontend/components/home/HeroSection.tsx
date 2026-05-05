@@ -21,7 +21,7 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden border-b jarq-border">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:44px_44px]" />
-      <div className="relative mx-auto grid min-h-[auto] max-w-6xl items-center gap-5 px-4 pb-10 pt-6 sm:px-6 sm:py-24 lg:min-h-[92vh] lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)] lg:gap-10 lg:px-8 lg:py-8">
+      <div className="relative mx-auto grid min-h-[auto] max-w-6xl items-center gap-5 px-4 pb-10 pt-6 sm:px-6 sm:py-24 md:pt-32 lg:min-h-[92vh] lg:grid-cols-[minmax(0,1fr)_minmax(360px,480px)] lg:gap-10 lg:px-8 lg:pb-12 lg:pt-32">
         <div className="order-2 min-w-0 text-center lg:order-1 lg:text-left">
           <motion.div
             className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 px-3 py-2 text-sm font-semibold text-cyan-200 shadow-[0_0_28px_rgba(34,211,238,0.2)] backdrop-blur-xl jarq-soft"
