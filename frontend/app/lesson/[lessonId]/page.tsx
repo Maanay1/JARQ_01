@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { AuthGate } from "@/components/auth/AuthGate";
 import { LessonRunner } from "@/components/lessons/LessonRunner";
 import { getLesson } from "@/lib/api";
 import { ExperienceControls } from "@/components/ui/ExperienceControls";
@@ -19,22 +20,24 @@ export default async function LessonPage({ params }: LessonPageProps) {
       <FuturisticBackground />
       <ExperienceControls />
       <MotionPage variant="lesson" className="relative z-10">
-      <section className="mx-auto max-w-5xl min-w-0">
-        <Link
-          href={lesson.course_id ? `/courses/${lesson.course_id}` : "/courses"}
-          className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold jarq-muted hover:text-cyan-200"
-        >
-          <ArrowLeft size={16} />
-          Уроки
-        </Link>
+        <AuthGate>
+          <section className="mx-auto max-w-5xl min-w-0">
+            <Link
+              href={lesson.course_id ? `/courses/${lesson.course_id}` : "/courses"}
+              className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold jarq-muted hover:text-cyan-200"
+            >
+              <ArrowLeft size={16} />
+              Уроки
+            </Link>
 
-        <header className="mt-5 min-w-0 border-b pb-5 jarq-border">
-          <div className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan-200">Интерактивный урок</div>
-          <h1 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl">{lesson.title}</h1>
-        </header>
+            <header className="mt-5 min-w-0 border-b pb-5 jarq-border">
+              <div className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan-200">Интерактивный урок</div>
+              <h1 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl">{lesson.title}</h1>
+            </header>
 
-        <LessonRunner lesson={lesson} />
-      </section>
+            <LessonRunner lesson={lesson} />
+          </section>
+        </AuthGate>
       </MotionPage>
     </main>
   );

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import { JarqExperienceProvider } from "@/components/JarqExperience";
 import { HapticProvider } from "@/components/ui/HapticProvider";
 import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
@@ -14,9 +15,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="ru">
       <body>
         <JarqExperienceProvider>
-          {children}
-          <HapticProvider />
-          <MobileBottomNav />
+          <AuthProvider>
+            {children}
+            <HapticProvider />
+            <MobileBottomNav />
+          </AuthProvider>
         </JarqExperienceProvider>
       </body>
     </html>

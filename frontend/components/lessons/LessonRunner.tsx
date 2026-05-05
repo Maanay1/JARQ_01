@@ -5,7 +5,8 @@ import { ArrowRight, Check, Code2, Headphones, HelpCircle, Loader2, Mic, Play, R
 import { motion } from "framer-motion";
 import { Lesson } from "@/lib/api";
 import { InteractiveStep, getInteractiveLesson } from "@/lib/interactive-lessons";
-import { MaaniyCharacter } from "@/components/MaaniyCharacter";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { MentorCharacter } from "@/components/mentors/MentorCharacter";
 import { hapticError, hapticSuccess } from "@/components/ui/HapticProvider";
 
 type LessonRunnerProps = {
@@ -30,6 +31,7 @@ declare global {
 }
 
 export function LessonRunner({ lesson }: LessonRunnerProps) {
+  const { selectedAvatarId } = useAuth();
   const interactiveLesson = useMemo(() => getInteractiveLesson(lesson), [lesson]);
   const steps = interactiveLesson.steps;
   const [stepIndex, setStepIndex] = useState(0);
@@ -172,7 +174,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   }
 
   if (isComplete) {
-    return <LessonResult title={interactiveLesson.title} xp={xp} steps={steps.length} onRestart={() => {
+    return <LessonResult avatarId={selectedAvatarId} title={interactiveLesson.title} xp={xp} steps={steps.length} onRestart={() => {
       setStepIndex(0);
       setXp(0);
       setXpBurst(null);
@@ -193,10 +195,9 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
 
       <aside className="min-w-0 rounded-[32px] p-4 liquid-glass sm:p-5">
         <div className="grid grid-cols-[150px_minmax(0,1fr)] items-center gap-4 md:block">
-          <MaaniyCharacter
-            mood={checkState === "correct" ? "happy" : checkState === "wrong" ? "sad" : currentStep.type === "explanation" ? "focused" : "idle"}
-            size="sm"
-            showBubble={false}
+          <MentorCharacter
+            avatarId={selectedAvatarId}
+            selected={checkState === "correct"}
             className={`mx-auto h-[150px] w-[150px] ${checkState === "correct" ? "mobile-correct-bounce" : checkState === "wrong" ? "mobile-wrong-shake" : ""}`}
           />
           <div className="rounded-[24px] border border-white/[0.08] bg-slate-950/65 p-4 text-[15px] font-semibold leading-6 text-transparent shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-xl [background:linear-gradient(90deg,#f8fafc,#a5f3fc,#d8b4fe)] [-webkit-background-clip:text] md:hidden">
@@ -204,10 +205,10 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           </div>
         </div>
         <div className="hidden md:block">
-        <MaaniyCharacter
-          mood={checkState === "correct" ? "happy" : checkState === "wrong" ? "sad" : currentStep.type === "explanation" ? "focused" : "idle"}
+        <MentorCharacter
+          avatarId={selectedAvatarId}
+          selected={checkState === "correct"}
           size="md"
-          showBubble
           message={feedback}
         />
         </div>
@@ -573,13 +574,13 @@ function SubmitButton() {
   );
 }
 
-function LessonResult({ title, xp, steps, onRestart }: { title: string; xp: number; steps: number; onRestart: () => void }) {
+function LessonResult({ avatarId, title, xp, steps, onRestart }: { avatarId: ReturnType<typeof useAuth>["selectedAvatarId"]; title: string; xp: number; steps: number; onRestart: () => void }) {
   const score = Math.round((xp / Math.max(1, steps * 10)) * 100);
   return (
     <section className="relative mt-4 overflow-hidden rounded-3xl p-5 pb-24 text-center jarq-glass sm:mt-6 sm:p-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.22),transparent_28%),radial-gradient(circle_at_80%_10%,rgba(168,85,247,0.2),transparent_24%)]" />
       {score > 80 ? <Confetti /> : null}
-      <MaaniyCharacter mood={score >= 70 ? "happy" : "focused"} size="sm" showBubble message={score >= 70 ? "Вау, отличный урок!" : "Ничего, повторим и дожмём."} className="mx-auto mb-2" />
+      <MentorCharacter avatarId={avatarId} selected={score >= 70} size="sm" message={score >= 70 ? "Вау, отличный урок!" : "Ничего, повторим и дожмём."} className="mx-auto mb-2" />
       <motion.div className="relative mx-auto grid h-24 w-24 place-items-center rounded-full bg-cyan-300 text-slate-950" initial={{ scale: 0.7 }} animate={{ scale: [0.7, 1.12, 1] }} transition={{ duration: 0.28 }}>
         <Trophy size={44} />
       </motion.div>
