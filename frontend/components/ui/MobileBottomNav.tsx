@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BarChart3, BookOpen, Home, UserRound } from "lucide-react";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 const navItems = [
@@ -15,7 +16,7 @@ export function MobileBottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 h-[60px] border-t border-white/10 bg-[#050b1a]/88 px-2 pb-[env(safe-area-inset-bottom)] text-white shadow-[0_-18px_45px_rgba(0,0,0,0.28)] backdrop-blur-2xl md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 h-[60px] border-t border-white/[0.05] bg-slate-950/65 px-2 pb-[env(safe-area-inset-bottom)] text-white shadow-[0_-8px_32px_rgba(0,0,0,0.37)] backdrop-blur-xl md:hidden">
       <div className="mx-auto grid h-full max-w-md grid-cols-4">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -24,13 +25,25 @@ export function MobileBottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold transition active:scale-95 ${
+              className={`elastic-tap relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-[24px] text-[11px] font-bold transition ${
                 isActive ? "text-cyan-200" : "text-slate-400"
               }`}
             >
-              <span className={`grid h-8 w-10 place-items-center rounded-xl ${isActive ? "bg-cyan-300/18 shadow-[0_0_24px_rgba(34,211,238,0.24)]" : ""}`}>
+              <motion.span
+                className={`grid h-8 w-10 place-items-center rounded-[20px] ${isActive ? "bg-cyan-300/15 shadow-[0_0_24px_rgba(34,211,238,0.24)]" : ""}`}
+                animate={{ y: isActive ? -4 : 0, scale: isActive ? 1.02 : 1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 350, damping: 26 }}
+              >
                 <Icon size={21} strokeWidth={isActive ? 2.6 : 2.2} />
-              </span>
+              </motion.span>
+              {isActive ? (
+                <motion.span
+                  layoutId="mobile-nav-active-dot"
+                  className="absolute bottom-1.5 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-cyan-300 to-purple-400 shadow-[0_0_8px_#8b5cf6]"
+                  transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                />
+              ) : null}
               <span className="truncate">{item.label}</span>
             </Link>
           );

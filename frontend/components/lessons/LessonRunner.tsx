@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Lesson } from "@/lib/api";
 import { InteractiveStep, getInteractiveLesson } from "@/lib/interactive-lessons";
 import { MaaniyCharacter } from "@/components/MaaniyCharacter";
+import { hapticError, hapticSuccess } from "@/components/ui/HapticProvider";
 
 type LessonRunnerProps = {
   lesson: Lesson;
@@ -79,14 +80,14 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
     setWrongStreak(0);
     setXp((value) => value + earned);
     setXpBurst(earned);
-    vibrate(100);
+    hapticSuccess();
     playPositiveSound();
   }
 
   function markWrong(customFeedback = "Почти. Посмотри на правильный смысл и попробуй ещё раз.") {
     setCheckState("wrong");
     setFeedback(customFeedback);
-    vibrate([100, 50, 100]);
+    hapticError();
     setWrongStreak((value) => {
       const next = value + 1;
       if (next >= 3) setShowHint(true);
@@ -186,19 +187,19 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           className="h-full bg-gradient-to-r from-cyan-300 to-purple-400"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.28, ease: "easeOut" }}
+          transition={{ type: "spring", stiffness: 350, damping: 26 }}
         />
       </div>
 
-      <aside className="min-w-0 rounded-3xl p-3 jarq-glass sm:p-5">
-        <div className="grid grid-cols-[82px_minmax(0,1fr)] items-center gap-3 md:block">
+      <aside className="min-w-0 rounded-[32px] p-4 liquid-glass sm:p-5">
+        <div className="grid grid-cols-[150px_minmax(0,1fr)] items-center gap-4 md:block">
           <MaaniyCharacter
             mood={checkState === "correct" ? "happy" : checkState === "wrong" ? "sad" : currentStep.type === "explanation" ? "focused" : "idle"}
             size="sm"
             showBubble={false}
-            className={`mx-auto ${checkState === "correct" ? "mobile-correct-bounce" : checkState === "wrong" ? "mobile-wrong-shake" : ""}`}
+            className={`mx-auto h-[150px] w-[150px] ${checkState === "correct" ? "mobile-correct-bounce" : checkState === "wrong" ? "mobile-wrong-shake" : ""}`}
           />
-          <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-3 text-sm font-semibold leading-6 md:hidden">
+          <div className="rounded-[24px] border border-white/[0.08] bg-slate-950/65 p-4 text-[15px] font-semibold leading-6 text-transparent shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-xl [background:linear-gradient(90deg,#f8fafc,#a5f3fc,#d8b4fe)] [-webkit-background-clip:text] md:hidden">
             {feedback}
           </div>
         </div>
@@ -221,7 +222,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
         ) : null}
       </aside>
 
-      <section className="soft-glow min-w-0 rounded-3xl p-4 jarq-glass sm:p-6">
+      <section className="soft-glow min-w-0 rounded-[32px] p-4 liquid-glass sm:p-6">
         <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="min-w-0">
             <div className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-200">
@@ -241,16 +242,16 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
             className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-purple-400 shadow-[0_0_24px_rgba(34,211,238,0.45)]"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.45, ease: "easeOut" }}
+            transition={{ type: "spring", stiffness: 350, damping: 26 }}
           />
         </div>
 
         <motion.div
           key={currentStep.id}
-          className={`message-in mt-5 rounded-2xl border p-4 sm:mt-6 sm:p-5 ${checkState === "correct" ? "border-emerald-300/60 bg-emerald-400/12" : checkState === "wrong" ? "border-rose-300/60 bg-rose-400/12" : "jarq-border jarq-soft"}`}
-          initial={{ opacity: 0, x: 18 }}
+          className={`message-in mt-5 rounded-[24px] border p-4 sm:mt-6 sm:p-5 ${checkState === "correct" ? "border-emerald-300/60 bg-emerald-400/12" : checkState === "wrong" ? "border-rose-300/60 bg-rose-400/12" : "border-white/[0.08] bg-slate-950/45"}`}
+          initial={{ opacity: 0, x: 42 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.24, ease: "easeOut" }}
+          transition={{ type: "spring", stiffness: 350, damping: 26 }}
         >
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] jarq-muted">
             <Code2 size={15} />
@@ -294,7 +295,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           <button
             type="button"
             onClick={() => setShowHint(true)}
-            className="button-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 text-base font-bold jarq-border jarq-soft hover:border-cyan-300"
+            className="elastic-tap inline-flex min-h-12 items-center justify-center gap-2 rounded-[24px] border border-white/[0.08] bg-slate-950/45 px-4 text-base font-bold backdrop-blur-xl hover:border-cyan-300"
           >
             <HelpCircle size={17} />
             Помоги мне
@@ -303,7 +304,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
             type="button"
             onClick={nextStep}
             disabled={checkState !== "correct"}
-            className="button-lift fixed inset-x-4 bottom-[76px] z-40 inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-5 text-base font-bold text-slate-950 shadow-[0_18px_44px_rgba(34,211,238,0.25)] transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50 sm:static sm:min-h-11 sm:rounded-xl sm:text-sm"
+            className="elastic-tap fixed inset-x-4 bottom-[76px] z-40 inline-flex min-h-14 items-center justify-center gap-2 rounded-[24px] bg-cyan-300 px-5 text-base font-bold text-slate-950 shadow-[0_18px_44px_rgba(34,211,238,0.25)] transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50 sm:static sm:min-h-11 sm:text-sm"
           >
             {stepIndex === steps.length - 1 ? "Завершить урок" : "Дальше"}
             <ArrowRight size={17} />
@@ -376,7 +377,7 @@ function StepBody(props: {
             key={option}
             type="button"
             onClick={() => props.checkText(option)}
-            className="button-lift min-h-14 rounded-2xl border px-4 text-left text-base font-bold jarq-border jarq-soft hover:border-cyan-300 active:border-cyan-300 active:bg-cyan-300/15"
+            className="elastic-tap min-h-14 rounded-[24px] border border-white/[0.08] bg-slate-950/45 px-4 text-left text-base font-bold backdrop-blur-xl hover:border-cyan-300 active:border-cyan-300 active:bg-cyan-300/15"
           >
             {option}
           </button>
@@ -441,10 +442,10 @@ function StepBody(props: {
   if (step.type === "true_false") {
     return (
       <div className="grid gap-[10px] sm:grid-cols-2">
-        <button type="button" onClick={() => props.checkText("true")} className="button-lift min-h-16 rounded-2xl bg-cyan-300 px-4 text-lg font-bold text-slate-950">
+        <button type="button" onClick={() => props.checkText("true")} className="elastic-tap min-h-16 rounded-[24px] bg-cyan-300 px-4 text-lg font-bold text-slate-950">
           Верно
         </button>
-        <button type="button" onClick={() => props.checkText("false")} className="button-lift min-h-16 rounded-2xl border px-4 text-lg font-bold jarq-border jarq-soft">
+        <button type="button" onClick={() => props.checkText("false")} className="elastic-tap min-h-16 rounded-[24px] border border-white/[0.08] bg-slate-950/45 px-4 text-lg font-bold backdrop-blur-xl">
           Неверно
         </button>
       </div>
@@ -642,12 +643,6 @@ function playPositiveSound() {
     oscillator.stop(audio.currentTime + 0.08);
   } catch {
     // Sound is optional; browsers may block it without user activation.
-  }
-}
-
-function vibrate(pattern: VibratePattern) {
-  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-    navigator.vibrate(pattern);
   }
 }
 

@@ -25,11 +25,13 @@ export function LearningTracksSection() {
                 initial={{ opacity: 0, y: 24, scale: 0.98 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: "-80px" }}
-                transition={{ delay: index * 0.08, duration: 0.45, ease: "easeOut" }}
+                transition={{ type: "spring", stiffness: 350, damping: 26, delay: index * 0.08 }}
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 0.98 }}
               >
                 <Link
                   href={track.href}
-                  className="button-lift group relative block min-h-[250px] overflow-hidden rounded-3xl border p-5 transition hover:-translate-y-1 hover:border-cyan-300/60 jarq-glass sm:min-h-[300px] sm:p-8"
+                  className="elastic-tap group relative block min-h-[250px] overflow-hidden rounded-[32px] border p-5 transition hover:border-cyan-300/60 liquid-glass sm:min-h-[300px] sm:p-8"
                 >
                   <div className={`absolute -right-20 -top-20 h-56 w-56 rounded-full bg-gradient-to-br ${track.accent} opacity-20 blur-3xl transition group-hover:opacity-35`} />
                   <div className={`grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br ${track.accent} text-slate-950`}>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JarqExperienceProvider } from "@/components/JarqExperience";
+import { HapticProvider } from "@/components/ui/HapticProvider";
 import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
 import "./globals.css";
 
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <JarqExperienceProvider>
           {children}
+          <HapticProvider />
           <MobileBottomNav />
         </JarqExperienceProvider>
       </body>

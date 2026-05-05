@@ -1,10 +1,10 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/courses/page": "app/courses/page.js",
   "/courses/[courseId]/page": "app/courses/[courseId]/page.js",
-  "/lesson/[lessonId]/page": "app/lesson/[lessonId]/page.js",
   "/chat/page": "app/chat/page.js",
+  "/lesson/[lessonId]/page": "app/lesson/[lessonId]/page.js",
   "/page": "app/page.js",
   "/progress/page": "app/progress/page.js",
+  "/courses/page": "app/courses/page.js",
   "/profile/page": "app/profile/page.js"
 }

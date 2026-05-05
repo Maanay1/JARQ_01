@@ -246,6 +246,26 @@ div {
   transform: translateY(0) scale(0.97);
 }
 
+.liquid-glass {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 6, 23, 0.65);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(24px);
+}
+
+.elastic-tap {
+  touch-action: manipulation;
+  transition:
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.elastic-tap:active {
+  transform: scale(0.95);
+}
+
 .xp-pop {
   animation: xp-pop 900ms ease-out both;
 }
@@ -295,4 +315,17 @@ div {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+@media (max-width: 767px) {
+  .jarq-glass {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(2, 6, 23, 0.65);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(24px);
+  }
+
+  .jarq-soft {
+    background: rgba(15, 23, 42, 0.48);
+  }
 }
