@@ -12,6 +12,7 @@ export default function LoginPage() {
   const { isConfigured, signInWithEmail, signInWithOAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<string | null>(null);
+  const [oauthError, setOauthError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleEmail(event: FormEvent<HTMLFormElement>) {
@@ -22,6 +23,14 @@ export default function LoginPage() {
     await signInWithEmail(email.trim());
     setStatus("Проверь почту: мы отправили magic link для входа.");
     setIsLoading(false);
+  }
+
+  async function handleOAuth(provider: "google" | "github") {
+    setOauthError(null);
+    const result = await signInWithOAuth(provider);
+    if (result.error) {
+      setOauthError(result.error);
+    }
   }
 
   return (
@@ -54,7 +63,7 @@ export default function LoginPage() {
           <div className="mt-6 grid gap-3">
             <motion.button
               type="button"
-              onClick={() => signInWithOAuth("google")}
+              onClick={() => handleOAuth("google")}
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 350, damping: 26 }}
@@ -65,7 +74,7 @@ export default function LoginPage() {
             </motion.button>
             <motion.button
               type="button"
-              onClick={() => signInWithOAuth("github")}
+              onClick={() => handleOAuth("github")}
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 350, damping: 26 }}
@@ -75,6 +84,16 @@ export default function LoginPage() {
               <Github size={19} />
               GitHub
             </motion.button>
+          </div>
+
+          {oauthError ? (
+            <div className="mt-4 rounded-[24px] border border-rose-300/30 bg-rose-400/10 p-4 text-sm leading-6 text-rose-100">
+              {oauthError}
+            </div>
+          ) : null}
+
+          <div className="mt-4 rounded-[24px] border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm leading-6 jarq-muted">
+            Если Google открывает JSON `provider is not enabled`, включи Google Provider в Supabase Auth Providers и добавь redirect URL.
           </div>
 
           <form onSubmit={handleEmail} className="mt-4 grid gap-3">

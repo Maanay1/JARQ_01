@@ -19,7 +19,7 @@ type AuthContextValue = {
   user: User | null;
   profile: JarqProfile | null;
   selectedAvatarId: MentorAvatarId;
-  signInWithOAuth: (provider: "google" | "github") => Promise<void>;
+  signInWithOAuth: (provider: "google" | "github") => Promise<{ error: string | null }>;
   signInWithEmail: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Pick<JarqProfile, "username" | "selected_avatar_id">>) => Promise<void>;
@@ -101,13 +101,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadProfile]);
 
   const signInWithOAuth = useCallback(async (provider: "google" | "github") => {
-    if (!supabase) return;
-    await supabase.auth.signInWithOAuth({
+    if (!supabase) return { error: "Supabase не настроен." };
+    const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: `${window.location.origin}/profile`,
       },
     });
+    return { error: error?.message ?? null };
   }, []);
 
   const signInWithEmail = useCallback(async (email: string) => {
