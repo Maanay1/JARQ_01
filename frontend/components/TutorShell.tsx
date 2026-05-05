@@ -20,7 +20,7 @@ const personas: Array<{ id: PersonaId; label: { ru: string; en: string }; tone: 
   { id: "jarq_sensei", label: { ru: "Сенсей", en: "Sensei" }, tone: { ru: "собранный, строгий, точный", en: "focused, strict, precise" } },
   { id: "jarq_professor", label: { ru: "Профессор", en: "Professor" }, tone: { ru: "структурный, подробный", en: "structured, detailed" } },
   { id: "jarq_native_speaker", label: { ru: "Носитель языка", en: "Native Speaker" }, tone: { ru: "живой разговорный английский", en: "natural English coach" } },
-  { id: "jarq_hana", label: { ru: "Мааний", en: "Maaniy" }, tone: { ru: "спокойный, уверенный, поддерживающий", en: "calm, confident, supportive" } },
+  { id: "jarq_hana", label: { ru: "Маанай", en: "MAANAY" }, tone: { ru: "спокойный, уверенный, поддерживающий", en: "calm, confident, supportive" } },
 ];
 
 const providers: Array<{ id: ProviderId; label: string }> = [
@@ -41,7 +41,7 @@ const chatCopy = {
     thinking: "JARQ думает...",
     placeholderTutor: "Напиши фразу, тему или ошибку, которую хочешь разобрать...",
     placeholderSupport: "Спроси про уроки, настройки, OpenRouter или Supabase...",
-    greeting: "Привет! Я Мааний. Выбери стиль общения и напиши, что хочешь потренировать.",
+    greeting: "Привет! Я Маанай. Выбери стиль общения и напиши, что хочешь потренировать.",
     supportGreeting: "Я в режиме поддержки. Помогу разобраться с проектом, уроками и настройками.",
     fail: "Не удалось получить ответ JARQ.",
     modeTutor: "Репетитор",
@@ -60,7 +60,7 @@ const chatCopy = {
     thinking: "JARQ is thinking...",
     placeholderTutor: "Write a phrase, topic, or mistake you want to review...",
     placeholderSupport: "Ask about lessons, setup, OpenRouter, or Supabase...",
-    greeting: "Hi! I’m Maaniy. Pick a style and tell me what you want to practice.",
+    greeting: "Hi! I’m MAANAY. Pick a style and tell me what you want to practice.",
     supportGreeting: "I’m in support mode. I can help with the product, lessons, and setup.",
     fail: "Could not get a JARQ response.",
     modeTutor: "Tutor",

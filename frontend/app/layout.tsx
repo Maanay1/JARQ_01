@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JarqExperienceProvider } from "@/components/JarqExperience";
+import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,7 +12,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ru">
       <body>
-        <JarqExperienceProvider>{children}</JarqExperienceProvider>
+        <JarqExperienceProvider>
+          {children}
+          <MobileBottomNav />
+        </JarqExperienceProvider>
       </body>
     </html>
   );

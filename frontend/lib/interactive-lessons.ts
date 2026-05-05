@@ -69,11 +69,11 @@ const englishBeginner: LessonBlueprint[] = [
   blueprint("english-beginner-numbers-11-100", "english", "Числа 11-100", "Beginner", "numbers 11-100", ["thirteen", "fourteen", "thirty", "forty"], "Thirty plus ten is forty", "forty"),
   blueprint("english-beginner-colors", "english", "Цвета", "Beginner", "12 basic colors", ["blue", "green", "red", "yellow"], "The sky is blue", "blue"),
   blueprint("english-beginner-greetings", "english", "Приветствия", "Beginner", "greetings", ["Hello", "Good morning", "Good night", "How are you?"], "Hello, how are you?", "Hello"),
-  blueprint("english-beginner-introductions", "english", "Знакомство", "Beginner", "introductions", ["name", "old", "from", "years"], "My name is Maaniy", "My name is Maaniy"),
+  blueprint("english-beginner-introductions", "english", "Знакомство", "Beginner", "introductions", ["name", "old", "from", "years"], "My name is MAANAY", "My name is MAANAY"),
   blueprint("english-beginner-body", "english", "Тело человека", "Beginner", "body parts", ["hand", "eyes", "head", "leg"], "These are my eyes", "eyes"),
   blueprint("english-beginner-family", "english", "Семья", "Beginner", "family", ["mother", "father", "sister", "brother"], "This is my family", "family"),
   blueprint("english-beginner-days-months", "english", "Дни недели и месяцы", "Beginner", "days and months", ["Monday", "Sunday", "January", "December"], "Today is Monday", "Monday"),
-  blueprint("english-beginner-final", "english", "Итоговый тест Beginner", "Beginner", "review", ["Hello", "blue", "Monday", "mother"], "Hello, my name is Maaniy", "Hello"),
+  blueprint("english-beginner-final", "english", "Итоговый тест Beginner", "Beginner", "review", ["Hello", "blue", "Monday", "mother"], "Hello, my name is MAANAY", "Hello"),
 ];
 
 const englishElementary: LessonBlueprint[] = [
@@ -249,7 +249,7 @@ function buildLesson(item: LessonBlueprint): InteractiveLesson {
       type: "mini_dialogue",
       title: "Мини диалог",
       maaniy: "Финальный мини-диалог. Выбери естественные ответы.",
-      prompt: "Проведи 4 реплики с Маанием.",
+      prompt: "Проведи 4 реплики с Маанаем.",
       dialogue: [
         { maaniy: "Привет! Готов к практике?", options: ["Да, начнём", "Нет никогда", "Я исчез"], answer: "Да, начнём" },
         { maaniy: `Что сегодня тренируем?`, options: [item.focus, "случайный шум", "ничего"], answer: item.focus },

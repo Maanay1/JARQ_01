@@ -27,7 +27,7 @@ export default async function CoursesPage() {
                 Два пути. Один AI репетитор.
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 jarq-muted sm:text-lg">
-                Мааний ведёт как в игре: короткие уровни, XP, стрик и понятные объяснения после каждого ответа.
+                Маанай ведёт как в игре: короткие уровни, XP, стрик и понятные объяснения после каждого ответа.
               </p>
             </div>
 

@@ -29,7 +29,7 @@ export const learningTracks: LearningTrack[] = [
     id: "english",
     title: "Английский язык",
     subtitle: "От первых слов до свободной речи",
-    description: "Игровой путь с диалогами, произношением, словарём и живыми объяснениями Маания.",
+    description: "Игровой путь с диалогами, произношением, словарём и живыми объяснениями Мааная.",
     href: "/courses/english",
     accent: "from-cyan-300 to-blue-500",
     icon: Globe2,

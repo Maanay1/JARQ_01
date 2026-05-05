@@ -38,7 +38,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   const [leftMatch, setLeftMatch] = useState<string | null>(null);
   const [dialogueIndex, setDialogueIndex] = useState(0);
   const [checkState, setCheckState] = useState<CheckState>("idle");
-  const [feedback, setFeedback] = useState("Мааний рядом. Сделай шаг, и он сразу подскажет.");
+  const [feedback, setFeedback] = useState("Маанай рядом. Сделай шаг, и он сразу подскажет.");
   const [wrongStreak, setWrongStreak] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [xp, setXp] = useState(0);
@@ -71,7 +71,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
     setFeedback(currentStep?.maaniy ?? "Продолжаем.");
   }
 
-  function markCorrect(customFeedback = "Верно! Мааний радуется и начисляет XP.") {
+  function markCorrect(customFeedback = "Верно! Маанай радуется и начисляет XP.") {
     if (checkState === "correct") return;
     const earned = currentStep.type === "explanation" || currentStep.type === "word_card" ? 5 : 10;
     setCheckState("correct");
@@ -79,12 +79,14 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
     setWrongStreak(0);
     setXp((value) => value + earned);
     setXpBurst(earned);
+    vibrate(100);
     playPositiveSound();
   }
 
   function markWrong(customFeedback = "Почти. Посмотри на правильный смысл и попробуй ещё раз.") {
     setCheckState("wrong");
     setFeedback(customFeedback);
+    vibrate([100, 50, 100]);
     setWrongStreak((value) => {
       const next = value + 1;
       if (next >= 3) setShowHint(true);
@@ -162,7 +164,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
     const output = printed || "Код принят. Для настоящего запуска позже подключим Pyodide.";
     setCodeOutput(output);
     if (!currentStep.expectedOutput || normalize(output).includes(normalize(currentStep.expectedOutput))) {
-      markCorrect("Код выглядит правильно. Мааний засчитал шаг.");
+      markCorrect("Код выглядит правильно. Маанай засчитал шаг.");
     } else {
       markWrong(`Вывод пока другой. Ожидалось что-то вроде: ${currentStep.expectedOutput}`);
     }
@@ -178,19 +180,41 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   }
 
   return (
-    <div className="mt-5 grid min-w-0 gap-5 lg:mt-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-      <aside className="min-w-0 rounded-3xl p-4 jarq-glass sm:p-5">
+    <div className="mt-3 grid min-w-0 gap-4 pb-28 lg:mt-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:pb-0">
+      <div className="fixed inset-x-0 top-0 z-30 h-1 bg-white/10 md:hidden">
+        <motion.div
+          className="h-full bg-gradient-to-r from-cyan-300 to-purple-400"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.28, ease: "easeOut" }}
+        />
+      </div>
+
+      <aside className="min-w-0 rounded-3xl p-3 jarq-glass sm:p-5">
+        <div className="grid grid-cols-[82px_minmax(0,1fr)] items-center gap-3 md:block">
+          <MaaniyCharacter
+            mood={checkState === "correct" ? "happy" : checkState === "wrong" ? "sad" : currentStep.type === "explanation" ? "focused" : "idle"}
+            size="sm"
+            showBubble={false}
+            className={`mx-auto ${checkState === "correct" ? "mobile-correct-bounce" : checkState === "wrong" ? "mobile-wrong-shake" : ""}`}
+          />
+          <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-3 text-sm font-semibold leading-6 md:hidden">
+            {feedback}
+          </div>
+        </div>
+        <div className="hidden md:block">
         <MaaniyCharacter
           mood={checkState === "correct" ? "happy" : checkState === "wrong" ? "sad" : currentStep.type === "explanation" ? "focused" : "idle"}
           size="md"
           showBubble
           message={feedback}
         />
+        </div>
         {wrongStreak >= 3 ? (
           <div className="message-in mt-4 rounded-2xl border border-purple-300/35 bg-purple-400/10 p-4 text-sm leading-6">
             <div className="flex items-center gap-2 font-bold text-purple-100">
               <HelpCircle size={16} />
-              Подсказка Маания
+              Подсказка Мааная
             </div>
             <p className="mt-2 jarq-muted">{currentStep.hint ?? "Смотри на пример и попробуй найти ключевое слово."}</p>
           </div>
@@ -212,7 +236,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           </div>
         </div>
 
-        <div className="mt-5 h-3 w-full overflow-hidden rounded-full bg-white/10">
+        <div className="mt-5 hidden h-3 w-full overflow-hidden rounded-full bg-white/10 md:block">
           <motion.div
             className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-purple-400 shadow-[0_0_24px_rgba(34,211,238,0.45)]"
             initial={{ width: 0 }}
@@ -221,13 +245,19 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           />
         </div>
 
-        <div className={`message-in mt-6 rounded-2xl border p-5 ${checkState === "correct" ? "border-emerald-300/60 bg-emerald-400/12" : checkState === "wrong" ? "border-rose-300/60 bg-rose-400/12" : "jarq-border jarq-soft"}`}>
+        <motion.div
+          key={currentStep.id}
+          className={`message-in mt-5 rounded-2xl border p-4 sm:mt-6 sm:p-5 ${checkState === "correct" ? "border-emerald-300/60 bg-emerald-400/12" : checkState === "wrong" ? "border-rose-300/60 bg-rose-400/12" : "jarq-border jarq-soft"}`}
+          initial={{ opacity: 0, x: 18 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.24, ease: "easeOut" }}
+        >
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] jarq-muted">
             <Code2 size={15} />
             {stepLabel(currentStep.type)}
           </div>
-          <p className="mt-3 whitespace-pre-line text-lg font-semibold leading-8">{currentStep.prompt}</p>
-        </div>
+          <p className="mt-3 whitespace-pre-line text-base font-semibold leading-7 sm:text-lg sm:leading-8">{currentStep.prompt}</p>
+        </motion.div>
 
         <div className="mt-6">
           <StepBody
@@ -264,7 +294,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           <button
             type="button"
             onClick={() => setShowHint(true)}
-            className="button-lift inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-bold jarq-border jarq-soft hover:border-cyan-300"
+            className="button-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 text-base font-bold jarq-border jarq-soft hover:border-cyan-300"
           >
             <HelpCircle size={17} />
             Помоги мне
@@ -273,7 +303,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
             type="button"
             onClick={nextStep}
             disabled={checkState !== "correct"}
-            className="button-lift inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="button-lift fixed inset-x-4 bottom-[76px] z-40 inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-5 text-base font-bold text-slate-950 shadow-[0_18px_44px_rgba(34,211,238,0.25)] transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50 sm:static sm:min-h-11 sm:rounded-xl sm:text-sm"
           >
             {stepIndex === steps.length - 1 ? "Завершить урок" : "Дальше"}
             <ArrowRight size={17} />
@@ -310,7 +340,7 @@ function StepBody(props: {
   if (step.type === "explanation") {
     return (
       <div className="grid gap-4 md:grid-cols-[180px_minmax(0,1fr)]">
-        <div className="grid min-h-40 place-items-center rounded-3xl bg-gradient-to-br from-cyan-300/20 to-purple-400/20 text-5xl font-black text-cyan-100">
+        <div className="grid min-h-36 place-items-center rounded-3xl bg-gradient-to-br from-cyan-300/20 to-purple-400/20 text-5xl font-black text-cyan-100 sm:min-h-40">
           {step.illustration ?? "JQ"}
         </div>
         <ActionCard onClick={() => props.markCorrect("Супер. База понятна, идём к практике.")} label="Понял, дальше" />
@@ -320,13 +350,13 @@ function StepBody(props: {
 
   if (step.type === "word_card") {
     return (
-      <div className="rounded-3xl border p-6 text-center jarq-border jarq-soft">
-        <div className="text-6xl font-black leading-none jarq-title-gradient">{step.word}</div>
-        <button type="button" onClick={() => props.speak(step.word ?? "")} className="button-lift mx-auto mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-300 px-4 text-sm font-bold text-slate-950">
+      <div className="rounded-3xl border p-5 text-center jarq-border jarq-soft sm:p-6">
+        <div className="text-5xl font-black leading-none jarq-title-gradient sm:text-6xl">{step.word}</div>
+        <button type="button" onClick={() => props.speak(step.word ?? "")} className="button-lift mx-auto mt-4 inline-flex min-h-12 items-center gap-2 rounded-xl bg-cyan-300 px-4 text-base font-bold text-slate-950 sm:text-sm">
           <Volume2 size={17} />
           {step.pronunciation}
         </button>
-        <p className="mt-5 text-lg font-semibold">{step.example}</p>
+        <p className="mt-5 text-base font-semibold leading-7 sm:text-lg">{step.example}</p>
         <ActionCard onClick={() => props.markCorrect("Запомнил. Отличная карточка в копилку памяти.")} label="Запомнил" />
       </div>
     );
@@ -334,9 +364,9 @@ function StepBody(props: {
 
   if (step.type === "choice" || step.type === "listen_choice") {
     return (
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-[10px] sm:grid-cols-2">
         {step.type === "listen_choice" ? (
-          <button type="button" onClick={() => props.speak(step.audioText ?? step.answer ?? "")} className="button-lift col-span-full inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-purple-400/18 px-4 text-sm font-bold text-purple-100">
+          <button type="button" onClick={() => props.speak(step.audioText ?? step.answer ?? "")} className="button-lift col-span-full inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-purple-400/18 px-4 text-base font-bold text-purple-100">
             <Headphones size={18} />
             Прослушать
           </button>
@@ -346,7 +376,7 @@ function StepBody(props: {
             key={option}
             type="button"
             onClick={() => props.checkText(option)}
-            className="button-lift min-h-14 rounded-2xl border px-4 text-left text-sm font-bold jarq-border jarq-soft hover:border-cyan-300"
+            className="button-lift min-h-14 rounded-2xl border px-4 text-left text-base font-bold jarq-border jarq-soft hover:border-cyan-300 active:border-cyan-300 active:bg-cyan-300/15"
           >
             {option}
           </button>
@@ -365,7 +395,7 @@ function StepBody(props: {
         }}
       >
         {step.type === "speak" ? (
-          <button type="button" onClick={props.startSpeechRecognition} className="button-lift inline-flex min-h-12 items-center gap-2 rounded-xl bg-purple-400/18 px-4 text-sm font-bold text-purple-100">
+          <button type="button" onClick={props.startSpeechRecognition} className="button-lift inline-flex min-h-12 items-center gap-2 rounded-xl bg-purple-400/18 px-4 text-base font-bold text-purple-100">
             {props.isListening ? <Loader2 className="animate-spin" size={18} /> : <Mic size={18} />}
             {props.isListening ? "Слушаю..." : "Сказать вслух"}
           </button>
@@ -373,7 +403,7 @@ function StepBody(props: {
         <input
           value={props.answer}
           onChange={(event) => props.setAnswer(event.target.value)}
-          className="min-h-14 w-full rounded-2xl border px-4 text-lg font-semibold outline-none jarq-border jarq-text jarq-soft focus:border-cyan-300"
+          className="min-h-14 w-full rounded-2xl border px-4 text-base font-semibold outline-none jarq-border jarq-text jarq-soft focus:border-cyan-300"
           placeholder={step.type === "speak" ? "Или введи фразу вручную..." : "Впиши ответ..."}
         />
         <SubmitButton />
@@ -386,20 +416,20 @@ function StepBody(props: {
     const chosen = props.selectedWords.join(" ");
     return (
       <div>
-        <div className="min-h-16 rounded-2xl border p-4 text-lg font-semibold jarq-border jarq-soft">{chosen || "Собранное предложение появится здесь"}</div>
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="min-h-20 rounded-2xl border border-dashed p-4 text-base font-semibold leading-7 jarq-border jarq-soft">{chosen || "Собранное предложение появится здесь"}</div>
+        <div className="mt-4 flex flex-wrap gap-[10px]">
           {(step.words ?? []).map((word, index) => (
-            <button key={`${word}-${index}`} type="button" onClick={() => props.setSelectedWords([...props.selectedWords, word])} className="button-lift rounded-xl border px-4 py-3 text-sm font-bold jarq-border jarq-soft hover:border-cyan-300">
+            <button key={`${word}-${index}`} type="button" onClick={() => props.setSelectedWords([...props.selectedWords, word])} className="button-lift min-h-10 rounded-xl border px-4 py-2 text-base font-bold jarq-border jarq-soft hover:border-cyan-300">
               {word}
             </button>
           ))}
         </div>
         <div className="mt-4 flex gap-2">
-          <button type="button" onClick={() => props.checkText(chosen, target)} className="button-lift inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-300 px-4 text-sm font-bold text-slate-950">
+          <button type="button" onClick={() => props.checkText(chosen, target)} className="button-lift inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-base font-bold text-slate-950">
             <Check size={17} />
             Проверить
           </button>
-          <button type="button" onClick={() => props.setSelectedWords([])} className="button-lift inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold jarq-border jarq-soft">
+          <button type="button" onClick={() => props.setSelectedWords([])} className="button-lift inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl border px-4 text-base font-bold jarq-border jarq-soft">
             <RotateCcw size={17} />
             Сброс
           </button>
@@ -410,7 +440,7 @@ function StepBody(props: {
 
   if (step.type === "true_false") {
     return (
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-[10px] sm:grid-cols-2">
         <button type="button" onClick={() => props.checkText("true")} className="button-lift min-h-16 rounded-2xl bg-cyan-300 px-4 text-lg font-bold text-slate-950">
           Верно
         </button>
@@ -428,15 +458,15 @@ function StepBody(props: {
     const isDone = props.matchedPairs.length === pairs.length;
     return (
       <div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-[10px]">
+          <div className="space-y-[10px]">
             {leftItems.map((item) => (
-              <button key={item} type="button" onClick={() => props.setLeftMatch(item)} className={`button-lift w-full rounded-xl border px-4 py-3 text-left text-sm font-bold ${props.leftMatch === item ? "border-cyan-300 bg-cyan-300/15" : "jarq-border jarq-soft"}`}>
+              <button key={item} type="button" onClick={() => props.setLeftMatch(item)} className={`button-lift min-h-12 w-full rounded-xl border px-3 py-2 text-left text-base font-bold ${props.leftMatch === item ? "border-cyan-300 bg-cyan-300/15" : "jarq-border jarq-soft"}`}>
                 {item}
               </button>
             ))}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-[10px]">
             {rightItems.map((item) => (
               <button
                 key={item}
@@ -453,7 +483,7 @@ function StepBody(props: {
                   props.setLeftMatch(null);
                   if (next.length === pairs.length) props.markCorrect("Пары собраны. Хорошая работа.");
                 }}
-                className="button-lift w-full rounded-xl border px-4 py-3 text-left text-sm font-bold jarq-border jarq-soft"
+                className="button-lift min-h-12 w-full rounded-xl border px-3 py-2 text-left text-base font-bold jarq-border jarq-soft"
               >
                 {item}
               </button>
@@ -476,7 +506,7 @@ function StepBody(props: {
     return (
       <div className="rounded-3xl border p-5 jarq-border jarq-soft">
         <div className="rounded-2xl bg-purple-400/14 p-4 text-lg font-semibold">{turn.maaniy}</div>
-        <div className="mt-4 grid gap-2">
+        <div className="mt-4 grid gap-[10px]">
           {turn.options.map((option) => (
             <button
               key={option}
@@ -486,10 +516,10 @@ function StepBody(props: {
                   props.markWrong(`Лучше ответить: ${turn.answer}`);
                   return;
                 }
-                if (props.dialogueIndex === turns.length - 1) props.markCorrect("Диалог пройден. Мааний доволен.");
+                if (props.dialogueIndex === turns.length - 1) props.markCorrect("Диалог пройден. Маанай доволен.");
                 else props.setDialogueIndex(props.dialogueIndex + 1);
               }}
-              className="button-lift min-h-12 rounded-xl border px-4 text-left text-sm font-bold jarq-border jarq-soft hover:border-cyan-300"
+              className="button-lift min-h-14 rounded-xl border px-4 text-left text-base font-bold jarq-border jarq-soft hover:border-cyan-300"
             >
               {option}
             </button>
@@ -506,15 +536,15 @@ function StepBody(props: {
         onChange={(event) => props.setAnswer(event.target.value)}
         rows={10}
         spellCheck={false}
-        className="min-h-64 w-full resize-none rounded-2xl border bg-[#050b1a]/80 p-4 font-mono text-sm leading-6 text-cyan-50 outline-none jarq-border focus:border-cyan-300"
+        className="min-h-56 w-full resize-none rounded-2xl border bg-[#050b1a]/80 p-4 font-mono text-base leading-6 text-cyan-50 outline-none jarq-border focus:border-cyan-300 sm:min-h-64 sm:text-sm"
       />
       <div className="rounded-2xl border p-4 jarq-border jarq-soft">
         <div className="flex gap-2">
-          <button type="button" onClick={props.runCode} className="button-lift inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-300 px-4 text-sm font-bold text-slate-950">
+          <button type="button" onClick={props.runCode} className="button-lift inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-base font-bold text-slate-950 sm:flex-none sm:text-sm">
             <Play size={17} />
             Запустить
           </button>
-          <button type="button" onClick={() => props.setAnswer(step.starterCode ?? "")} className="button-lift inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold jarq-border jarq-soft">
+          <button type="button" onClick={() => props.setAnswer(step.starterCode ?? "")} className="button-lift inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl border px-4 text-base font-bold jarq-border jarq-soft sm:flex-none sm:text-sm">
             Помоги мне
           </button>
         </div>
@@ -526,7 +556,7 @@ function StepBody(props: {
 
 function ActionCard({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="button-lift mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-5 text-sm font-bold text-slate-950">
+    <button type="button" onClick={onClick} className="button-lift mt-4 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-5 text-base font-bold text-slate-950 sm:min-h-12 sm:text-sm">
       <Check size={17} />
       {label}
     </button>
@@ -535,7 +565,7 @@ function ActionCard({ label, onClick }: { label: string; onClick: () => void }) 
 
 function SubmitButton() {
   return (
-    <button type="submit" className="button-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 text-sm font-bold text-slate-950">
+    <button type="submit" className="button-lift inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 text-base font-bold text-slate-950 sm:w-auto sm:min-h-12 sm:text-sm">
       <Check size={17} />
       Проверить
     </button>
@@ -545,9 +575,11 @@ function SubmitButton() {
 function LessonResult({ title, xp, steps, onRestart }: { title: string; xp: number; steps: number; onRestart: () => void }) {
   const score = Math.round((xp / Math.max(1, steps * 10)) * 100);
   return (
-    <section className="relative mt-6 overflow-hidden rounded-3xl p-8 text-center jarq-glass">
+    <section className="relative mt-4 overflow-hidden rounded-3xl p-5 pb-24 text-center jarq-glass sm:mt-6 sm:p-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.22),transparent_28%),radial-gradient(circle_at_80%_10%,rgba(168,85,247,0.2),transparent_24%)]" />
-      <motion.div className="relative mx-auto grid h-24 w-24 place-items-center rounded-full bg-cyan-300 text-slate-950" initial={{ scale: 0.7 }} animate={{ scale: [0.7, 1.12, 1] }}>
+      {score > 80 ? <Confetti /> : null}
+      <MaaniyCharacter mood={score >= 70 ? "happy" : "focused"} size="sm" showBubble message={score >= 70 ? "Вау, отличный урок!" : "Ничего, повторим и дожмём."} className="mx-auto mb-2" />
+      <motion.div className="relative mx-auto grid h-24 w-24 place-items-center rounded-full bg-cyan-300 text-slate-950" initial={{ scale: 0.7 }} animate={{ scale: [0.7, 1.12, 1] }} transition={{ duration: 0.28 }}>
         <Trophy size={44} />
       </motion.div>
       <h2 className="relative mt-6 text-3xl font-semibold">Урок завершён</h2>
@@ -555,21 +587,45 @@ function LessonResult({ title, xp, steps, onRestart }: { title: string; xp: numb
       <div className="relative mx-auto mt-6 grid max-w-md gap-3 sm:grid-cols-2">
         <div className="rounded-2xl p-4 jarq-soft">
           <div className="text-xs font-bold uppercase tracking-[0.14em] jarq-muted">Результат</div>
-          <div className="mt-1 text-3xl font-semibold">{score}%</div>
+          <div className="mt-1 text-5xl font-semibold sm:text-3xl">{score}%</div>
         </div>
         <div className="rounded-2xl p-4 jarq-soft">
           <div className="text-xs font-bold uppercase tracking-[0.14em] jarq-muted">XP</div>
-          <div className="mt-1 text-3xl font-semibold">{xp}</div>
+          <motion.div className="mt-1 text-5xl font-semibold sm:text-3xl" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28 }}>{xp}</motion.div>
         </div>
       </div>
       <p className="relative mx-auto mt-5 max-w-xl text-sm leading-6 jarq-muted">
         {score >= 70 ? "Следующий урок разблокирован. Прогресс сохранён локально и готов к синхронизации с Supabase." : "Лучше повторить проблемные темы: для разблокировки нужно 70%."}
       </p>
-      <button type="button" onClick={onRestart} className="button-lift relative mt-6 inline-flex min-h-12 items-center gap-2 rounded-xl bg-cyan-300 px-5 text-sm font-bold text-slate-950">
-        <RotateCcw size={17} />
-        Повторить
-      </button>
+      <div className="relative mt-6 grid gap-3 sm:mx-auto sm:max-w-md sm:grid-cols-2">
+        <button type="button" onClick={onRestart} className="button-lift inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border px-5 text-base font-bold jarq-border jarq-soft">
+          <RotateCcw size={17} />
+          Повторить
+        </button>
+        <a href="/courses" className="button-lift inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-5 text-base font-bold text-slate-950">
+          Следующий урок
+          <ArrowRight size={17} />
+        </a>
+      </div>
     </section>
+  );
+}
+
+function Confetti() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {Array.from({ length: 16 }).map((_, index) => (
+        <span
+          key={index}
+          className="confetti-piece absolute h-2 w-2 rounded-sm"
+          style={{
+            left: `${8 + index * 6}%`,
+            background: index % 2 ? "#22d3ee" : "#a855f7",
+            animationDelay: `${index * 35}ms`,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -586,6 +642,12 @@ function playPositiveSound() {
     oscillator.stop(audio.currentTime + 0.08);
   } catch {
     // Sound is optional; browsers may block it without user activation.
+  }
+}
+
+function vibrate(pattern: VibratePattern) {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    navigator.vibrate(pattern);
   }
 }
 
