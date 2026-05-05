@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowLeft, Flame, LockKeyhole, Play, Star, Trophy } from "lucide-react";
-import { motion } from "framer-motion";
 import { LearningTrack, userLevelFromXp } from "@/lib/learning-paths";
 
 type LearningPathProps = {
@@ -51,11 +48,9 @@ export function LearningPath({ track }: LearningPathProps) {
               <span>{totalProgress}%</span>
             </div>
             <div className="mt-2 h-3 overflow-hidden rounded-full bg-white/10">
-              <motion.div
+              <div
                 className={`h-full rounded-full bg-gradient-to-r ${track.accent}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${totalProgress}%` }}
-                transition={{ duration: 0.9, ease: "easeOut" }}
+                style={{ width: `${totalProgress}%` }}
               />
             </div>
           </div>
@@ -69,12 +64,10 @@ export function LearningPath({ track }: LearningPathProps) {
             const Icon = level.icon;
             const isLeft = index % 2 === 0;
             return (
-              <motion.article
+              <article
                 key={level.id}
-                className={`relative grid min-w-0 gap-4 md:grid-cols-[1fr_80px_1fr] md:items-center`}
-                initial={{ opacity: 0, y: 22, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: index * 0.07, duration: 0.45, ease: "easeOut" }}
+                className="page-enter-courses relative grid min-w-0 gap-4 md:grid-cols-[1fr_80px_1fr] md:items-center"
+                style={{ animationDelay: `${index * 70}ms` }}
               >
                 <div className={isLeft ? "md:order-1" : "md:order-3"}>{isLeft ? <LevelCard track={track} level={level} index={index} Icon={Icon} /> : null}</div>
                 <div className="relative order-1 flex justify-start md:order-2 md:justify-center">
@@ -83,7 +76,7 @@ export function LearningPath({ track }: LearningPathProps) {
                   </div>
                 </div>
                 <div className={isLeft ? "md:order-3" : "md:order-1"}>{!isLeft ? <LevelCard track={track} level={level} index={index} Icon={Icon} /> : null}</div>
-              </motion.article>
+              </article>
             );
           })}
         </div>
@@ -127,11 +120,9 @@ function LevelCard({
           <span>+{level.xp} XP</span>
         </div>
         <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/10">
-          <motion.div
+          <div
             className={`h-full rounded-full bg-gradient-to-r ${track.accent}`}
-            initial={{ width: 0 }}
-            animate={{ width: `${level.progress}%` }}
-            transition={{ duration: 0.7, delay: 0.1 + index * 0.06 }}
+            style={{ width: `${level.progress}%` }}
           />
         </div>
       </div>
