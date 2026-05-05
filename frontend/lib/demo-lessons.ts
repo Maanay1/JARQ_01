@@ -1,4 +1,5 @@
 import { CheckAnswerResponse, Course, Lesson, LessonTask } from "@/lib/types";
+import { getInteractiveLessonMeta } from "@/lib/interactive-lessons";
 
 export const demoCourses: Course[] = [
   {
@@ -145,10 +146,18 @@ export const demoLessons: Lesson[] = [
 ];
 
 export function getDemoCourseLessons(courseId: string): Lesson[] {
+  if (courseId === "english" || courseId === "programming") {
+    return [];
+  }
   return demoLessons.filter((lessonItem) => lessonItem.course_id === courseId);
 }
 
 export function getDemoLesson(lessonId: string): Lesson {
+  const interactiveMeta = getInteractiveLessonMeta(lessonId);
+  if (interactiveMeta) {
+    return lesson(interactiveMeta.id, interactiveMeta.courseId, interactiveMeta.title, `${interactiveMeta.level} · интерактивный урок JARQ`, 1, []);
+  }
+
   return (
     demoLessons.find((lessonItem) => lessonItem.id === lessonId) ??
     lesson("demo-task", "demo", "Демо-урок", "Запасной демо-урок.", 1, [

@@ -1,41 +1,29 @@
-import { Bot, CheckCircle2, Gamepad2, LockKeyhole, Mic, Route } from "lucide-react";
+import { Brain, Gamepad2, Mic, Route } from "lucide-react";
 
 export const features = [
   {
-    title: "Голосовые диалоги",
-    text: "Говори естественно, получай ответы и тренируйся без постоянного набора текста.",
-    icon: Mic,
-    color: "bg-coral/15 text-coral",
+    title: "Память ученика",
+    text: "JARQ помнит слабые темы, стиль ответов, XP и то, что стоит повторить перед следующим уроком.",
+    icon: Brain,
+    color: "bg-cyan-300/20 text-cyan-100",
   },
   {
-    title: "AI-личности",
-    text: "Переключайся между классиком, бро, сенсеем, профессором, носителем языка или Ханой.",
-    icon: Bot,
-    color: "bg-mint/20 text-ink",
-  },
-  {
-    title: "Личный путь обучения",
-    text: "JARQ помнит уровень, XP, серию дней, любимую личность и текущие темы.",
+    title: "Живые уроки",
+    text: "Мааний объясняет маленькими шагами: карточка, выбор ответа, самостоятельный ввод и повторение голосом.",
     icon: Route,
-    color: "bg-sky/20 text-ink",
+    color: "bg-purple-300/20 text-purple-100",
   },
   {
-    title: "Анализ ошибок",
-    text: "Ошибки становятся полезными сигналами: исправления, объяснения и слабые темы.",
-    icon: CheckCircle2,
-    color: "bg-coral/15 text-ink",
-  },
-  {
-    title: "Игровые уроки",
-    text: "Уроки ощущаются как квесты с XP, прогрессом и быстрой обратной связью.",
+    title: "XP система",
+    text: "За правильные ответы начисляется XP, растёт уровень ученика и виден прогресс по каждой дорожке.",
     icon: Gamepad2,
-    color: "bg-mint/20 text-ink",
+    color: "bg-cyan-300/20 text-cyan-100",
   },
   {
-    title: "Будущий локальный AI",
-    text: "Слой провайдеров готов к локальным моделям и приватному офлайн-обучению.",
-    icon: LockKeyhole,
-    color: "bg-ink text-white",
+    title: "Голосовой режим",
+    text: "Можно тренировать речь и произношение. Сейчас режим готов как демо и подключается к реальным STT/TTS ключам.",
+    icon: Mic,
+    color: "bg-purple-300/20 text-purple-100",
   },
 ];
 

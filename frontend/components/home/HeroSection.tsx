@@ -1,20 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, Brain, Mic, Sparkles, Wand2 } from "lucide-react";
+import { Bot, Brain, Flame, Mic, Sparkles, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { MaaniyCharacter } from "@/components/MaaniyCharacter";
-import { uiText, useJarqExperience } from "@/components/JarqExperience";
 import { MaaniyMood, useMaaniyInteraction } from "@/components/maaniy/useMaaniyInteraction";
 
 export function HeroSection() {
-  const { language } = useJarqExperience();
   const { mood, setMood, resetMood, triggerClick } = useMaaniyInteraction();
-  const text = uiText[language];
-  const benefits =
-    language === "ru"
-      ? ["Память ученика", "Живые личности", "Уроки с XP"]
-      : ["Learner memory", "Living personas", "XP lessons"];
+  const benefits = ["Память ученика", "Живые уроки", "XP система"];
 
   function hoverProps(nextMood: MaaniyMood) {
     return {
@@ -35,16 +29,14 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
           >
             <Sparkles size={16} />
-            {language === "ru" ? "Не просто чат. Репетитор с памятью." : "Not just chat. A tutor with memory."}
+            AI репетитор для студенческого экспо
           </motion.div>
 
           <h1 className="jarq-title-gradient mt-6 text-4xl font-semibold leading-none sm:text-6xl lg:text-8xl">
-            JARQ
+            JARQ учит как игра, объясняет как репетитор
           </h1>
           <p className="jarq-muted mx-auto mt-5 max-w-2xl text-base leading-7 sm:text-xl sm:leading-8 lg:mx-0 lg:text-2xl">
-            {language === "ru"
-              ? "AI-репетитор, где Мааний ведет тебя через уроки, чат и практику"
-              : "An AI tutor where Maaniy guides you through lessons, chat, and practice"}
+            Мааний ведёт студента по персональному пути: английский, программирование, голосовая практика, XP и память ошибок.
           </p>
 
           <div className="mt-7 grid gap-3 sm:mx-auto sm:max-w-md lg:mx-0 lg:flex lg:max-w-none lg:flex-row">
@@ -54,7 +46,7 @@ export function HeroSection() {
               className="button-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-[0_0_34px_rgba(34,211,238,0.35)] transition hover:bg-cyan-200"
             >
               <Wand2 size={18} />
-              {text.start}
+              Начать бесплатно
             </Link>
             <Link
               href="/chat"
@@ -62,7 +54,7 @@ export function HeroSection() {
               className="button-lift jarq-text inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold ring-1 backdrop-blur-xl transition hover:bg-white/16 jarq-soft"
             >
               <Bot size={18} />
-              {text.chat}
+              Open AI Chat
             </Link>
             <Link
               href="#voice-demo"
@@ -70,8 +62,16 @@ export function HeroSection() {
               className="button-lift jarq-text inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-purple-300/30 bg-purple-400/10 px-5 py-3 text-sm font-semibold backdrop-blur-xl transition hover:border-cyan-300"
             >
               <Mic size={18} />
-              {language === "ru" ? "Голосовой режим" : "Try voice mode"}
+              Try Voice Mode
             </Link>
+          </div>
+          <div className="mt-5 flex flex-wrap justify-center gap-3 text-sm font-semibold jarq-muted lg:justify-start">
+            <span className="inline-flex items-center gap-2 rounded-full px-3 py-2 jarq-soft">
+              <Flame size={16} className="text-cyan-200" />
+              Стрик: 3 дня
+            </span>
+            <span className="rounded-full px-3 py-2 jarq-soft">Уровень: Новичок</span>
+            <span className="rounded-full px-3 py-2 jarq-soft">240 XP</span>
           </div>
           <div className="mx-auto mt-7 grid max-w-2xl gap-3 sm:grid-cols-3 lg:mx-0">
             {benefits.map((benefit, index) => (
@@ -94,9 +94,9 @@ export function HeroSection() {
             <div className="flex min-w-0 items-center justify-between rounded-xl border px-4 py-3 backdrop-blur-xl jarq-border jarq-soft">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">
-                  {language === "ru" ? "Главный персонаж" : "Main character"}
+                  Главный персонаж
                 </div>
-                <div className="mt-1 text-xl font-semibold jarq-text">MAANIY</div>
+                <div className="mt-1 text-xl font-semibold jarq-text">МААНИЙ</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-full bg-cyan-300/20 text-cyan-100">
                 <Brain size={22} />
@@ -108,27 +108,27 @@ export function HeroSection() {
                 mood={mood}
                 size="lg"
                 showBubble
-                message={language === "ru" ? "Привет, я Мааний — твой AI репетитор" : "Hi, I’m Maaniy — your AI tutor"}
+                message="Привет, я Мааний — твой AI репетитор"
                 className="translate-y-2"
               />
             </div>
 
             <div className="space-y-3 rounded-xl border p-3 backdrop-blur-xl jarq-border jarq-soft">
               <div className="jarq-muted max-w-[86%] rounded-lg px-4 py-3 text-sm leading-6 backdrop-blur jarq-soft">
-                {language === "ru" ? "Скажи, что хочешь потренировать. Я запомню сложные места." : "Tell me what you want to practice. I will remember the hard parts."}
+                Скажи, что хочешь потренировать. Я запомню сложные места.
               </div>
               <div className="ml-auto max-w-[86%] rounded-lg bg-cyan-300 px-4 py-3 text-sm leading-6 text-slate-950">
-                {language === "ru" ? "Помоги мне звучать естественно на английском." : "Help me sound natural in English."}
+                Помоги мне звучать естественно на английском.
               </div>
               <div className="max-w-[86%] rounded-lg bg-purple-400/18 px-4 py-3 text-sm leading-6 jarq-text">
-                {language === "ru" ? "Отлично. Будем тренироваться коротко, точно и по-человечески." : "Perfect. We will train small, sharp, and human."}
+                Отлично. Будем тренироваться коротко, точно и по-человечески.
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-2 pt-4">
-              <Signal label={language === "ru" ? "голос" : "voice"} value={language === "ru" ? "вкл" : "on"} />
-              <Signal label={language === "ru" ? "память" : "memory"} value={language === "ru" ? "живая" : "live"} />
-              <Signal label={language === "ru" ? "настрой" : "mood"} value={language === "ru" ? "мягкий" : "soft"} />
+              <Signal label="голос" value="демо" />
+              <Signal label="память" value="живая" />
+              <Signal label="настрой" value="мягкий" />
             </div>
           </div>
         </div>

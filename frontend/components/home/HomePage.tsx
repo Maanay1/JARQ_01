@@ -4,7 +4,10 @@ import { CtaSection } from "@/components/home/CtaSection";
 import { DemoChatSection } from "@/components/home/DemoChatSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { HeroSection } from "@/components/home/HeroSection";
+import { LearningTracksSection } from "@/components/home/LearningTracksSection";
 import { PersonaPreviewSection } from "@/components/home/PersonaPreviewSection";
+import { SiteFooter } from "@/components/home/SiteFooter";
+import { SiteHeader } from "@/components/home/SiteHeader";
 import { IntroScreen } from "@/components/IntroScreen";
 import { ExperienceControls } from "@/components/ui/ExperienceControls";
 import { FuturisticBackground } from "@/components/ui/FuturisticBackground";
@@ -19,13 +22,16 @@ export function HomePage() {
     <main className={`relative min-h-screen overflow-hidden ${isNight ? "text-white" : "text-slate-950"}`}>
       <FuturisticBackground />
       <IntroScreen />
+      <SiteHeader />
       <ExperienceControls />
       <MotionPage variant="home" className="relative z-10">
         <HeroSection />
+        <LearningTracksSection />
         <FeaturesSection />
         <PersonaPreviewSection />
         <DemoChatSection />
         <CtaSection />
+        <SiteFooter />
       </MotionPage>
     </main>
   );

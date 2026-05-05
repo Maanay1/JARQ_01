@@ -39,8 +39,8 @@ const moodConfig: Record<MaaniyMood, MaaniyPose> = {
     headTilt: 0,
     bodyTilt: 0,
     blush: 0.18,
-    armLift: 0,
-    pawWave: 0,
+    armLift: 3,
+    pawWave: -8,
     lensOpen: 1,
   },
   hover: {

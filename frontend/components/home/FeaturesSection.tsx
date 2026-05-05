@@ -5,8 +5,8 @@ export function FeaturesSection() {
     <section className="border-b px-4 py-12 sm:px-6 sm:py-16 lg:px-8 jarq-border">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl min-w-0">
-          <div className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan-200">Возможности</div>
-          <h2 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl">Создан как напарник в обучении</h2>
+          <div className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan-200">Преимущества</div>
+          <h2 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl">То, что делает обучение живым</h2>
         </div>
 
         <div className="mt-8 grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
