@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, Menu, Sparkles } from "lucide-react";
+import { BarChart3, BookOpen, Bot, Home, Menu, Sparkles, UserRound } from "lucide-react";
 
 export function SiteHeader() {
   return (
@@ -13,12 +13,27 @@ export function SiteHeader() {
           </span>
           JARQ
         </Link>
-        <nav className="hidden items-center gap-6 text-sm font-semibold text-slate-200 md:flex">
+        <nav className="hidden items-center gap-4 text-sm font-semibold text-slate-200 md:flex">
+          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/">
+            <Home size={16} />
+            Главная
+          </Link>
           <Link className="transition hover:text-cyan-200" href="/courses">
-            Курсы
+            <span className="inline-flex items-center gap-2">
+              <BookOpen size={16} />
+              Уроки
+            </span>
           </Link>
           <Link className="transition hover:text-cyan-200" href="/courses/english">
             Английский
+          </Link>
+          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/progress">
+            <BarChart3 size={16} />
+            Прогресс
+          </Link>
+          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/profile">
+            <UserRound size={16} />
+            Профиль
           </Link>
           <Link className="transition hover:text-cyan-200" href="/chat">
             AI чат
