@@ -4,7 +4,7 @@ import { Session, User } from "@supabase/supabase-js";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export type MentorAvatarId = "maanay" | "sensei" | "professor" | "robo_bot";
+export type MentorAvatarId = "maanay" | "sensei" | "professor" | "robo_bot" | "tulpar" | "nomad" | "snow_leopard" | "astro";
 
 export type JarqProfile = {
   id: string;
@@ -193,5 +193,14 @@ export function useAuth() {
 }
 
 function normalizeAvatarId(value: unknown): MentorAvatarId {
-  return value === "sensei" || value === "professor" || value === "robo_bot" || value === "maanay" ? value : DEFAULT_AVATAR;
+  return value === "sensei" ||
+    value === "professor" ||
+    value === "robo_bot" ||
+    value === "tulpar" ||
+    value === "nomad" ||
+    value === "snow_leopard" ||
+    value === "astro" ||
+    value === "maanay"
+    ? value
+    : DEFAULT_AVATAR;
 }

@@ -17,6 +17,10 @@ export const mentorCopy: Record<MentorAvatarId, { name: string; phrase: string }
   sensei: { name: "SENSEI", phrase: "Путь начинается с одного шага, ученик! 🏔️" },
   professor: { name: "PROFESSOR", phrase: "Мой метод обучения максимально эффективен! 🎓" },
   robo_bot: { name: "ROBO-BOT", phrase: "Система инициализирована. Погнали кодить! 🤖" },
+  tulpar: { name: "TULPAR", phrase: "Летим к новым знаниям быстро и красиво! 🪽" },
+  nomad: { name: "NOMAD", phrase: "Спокойно идём по пути знаний, шаг за шагом. 🏕️" },
+  snow_leopard: { name: "AK ILBIRS", phrase: "Тихий фокус. Быстрая победа. 🐾" },
+  astro: { name: "ASTRO", phrase: "Курс проложен. Запускаем обучение! 🚀" },
 };
 
 export function MentorCharacter({ avatarId, selected = false, size = "sm", message, className = "" }: MentorCharacterProps) {
@@ -56,8 +60,77 @@ export function MentorCharacter({ avatarId, selected = false, size = "sm", messa
         {avatarId === "sensei" ? <SenseiSvg selected={selected} /> : null}
         {avatarId === "professor" ? <ProfessorSvg selected={selected} /> : null}
         {avatarId === "robo_bot" ? <RoboSvg selected={selected} /> : null}
+        {avatarId === "tulpar" ? <TulparSvg selected={selected} /> : null}
+        {avatarId === "nomad" ? <NomadSvg selected={selected} /> : null}
+        {avatarId === "snow_leopard" ? <SnowLeopardSvg selected={selected} /> : null}
+        {avatarId === "astro" ? <AstroSvg selected={selected} /> : null}
       </svg>
     </motion.div>
+  );
+}
+
+function TulparSvg({ selected }: { selected: boolean }) {
+  return (
+    <g>
+      <ellipse cx="80" cy="82" rx="44" ry="50" fill="#0f172a" stroke="#67e8f9" strokeWidth="3" />
+      <path d="M41 78 C18 60 20 112 49 106" fill="#a855f7" opacity="0.7" />
+      <path d="M119 78 C142 60 140 112 111 106" fill="#22d3ee" opacity="0.7" />
+      <path d="M59 50 C70 27 95 27 106 50" fill="#f8fafc" opacity="0.95" />
+      <circle cx="65" cy="80" r="7" fill="#22d3ee" />
+      <circle cx="95" cy="80" r="7" fill="#22d3ee" />
+      <path d="M67 102 C75 109 86 109 94 102" fill="none" stroke="#fda4af" strokeWidth="4" strokeLinecap="round" />
+      <motion.path d="M56 132 C66 121 94 121 104 132 L116 170 L44 170Z" fill="#111827" animate={{ y: selected ? [0, -5, 0] : 0 }} />
+    </g>
+  );
+}
+
+function NomadSvg({ selected }: { selected: boolean }) {
+  return (
+    <g>
+      <circle cx="80" cy="76" r="44" fill="#1f2937" />
+      <path d="M42 56 C52 26 108 26 118 56 C100 48 60 48 42 56Z" fill="#f59e0b" />
+      <path d="M54 54 L80 28 L106 54" fill="none" stroke="#fde68a" strokeWidth="5" strokeLinecap="round" />
+      <ellipse cx="64" cy="78" rx="8" ry="6" fill="#a5f3fc" />
+      <ellipse cx="96" cy="78" rx="8" ry="6" fill="#a5f3fc" />
+      <path d="M67 100 C75 105 85 105 93 100" fill="none" stroke="#fecaca" strokeWidth="4" strokeLinecap="round" />
+      <path d="M50 132 C60 114 100 114 110 132 L120 170 L40 170Z" fill="#78350f" />
+      <motion.path d="M103 122 C122 128 130 143 122 157" fill="none" stroke="#78350f" strokeWidth="12" strokeLinecap="round" animate={{ rotate: selected ? -12 : 0 }} />
+    </g>
+  );
+}
+
+function SnowLeopardSvg({ selected }: { selected: boolean }) {
+  return (
+    <g>
+      <circle cx="80" cy="78" r="46" fill="#e5e7eb" />
+      <path d="M48 48 L38 24 L66 38Z" fill="#e5e7eb" />
+      <path d="M112 48 L122 24 L94 38Z" fill="#e5e7eb" />
+      {[56, 75, 101, 88, 65, 108].map((x, index) => (
+        <circle key={index} cx={x} cy={index % 2 ? 56 : 92} r="3" fill="#0f172a" opacity="0.65" />
+      ))}
+      <circle cx="65" cy="78" r="7" fill="#0f172a" />
+      <circle cx="95" cy="78" r="7" fill="#0f172a" />
+      <circle cx="80" cy="91" r="5" fill="#fb7185" />
+      <path d="M68 105 C76 112 84 112 92 105" fill="none" stroke="#0f172a" strokeWidth="4" strokeLinecap="round" />
+      <motion.path d="M54 132 C65 116 95 116 106 132 L116 170 L44 170Z" fill="#cbd5e1" animate={{ scale: selected ? [1, 1.04, 1] : 1 }} style={{ transformOrigin: "80px 140px" }} />
+    </g>
+  );
+}
+
+function AstroSvg({ selected }: { selected: boolean }) {
+  return (
+    <g>
+      <circle cx="80" cy="78" r="46" fill="#0f172a" stroke="#a855f7" strokeWidth="4" />
+      <circle cx="80" cy="78" r="31" fill="#111827" stroke="#67e8f9" strokeWidth="3" />
+      <circle cx="68" cy="75" r="5" fill="#67e8f9" />
+      <circle cx="92" cy="75" r="5" fill="#67e8f9" />
+      <path d="M70 94 C77 99 84 99 91 94" fill="none" stroke="#f8fafc" strokeWidth="4" strokeLinecap="round" />
+      <path d="M54 132 C64 116 96 116 106 132 L118 170 L42 170Z" fill="#312e81" />
+      <motion.g animate={{ rotate: selected ? 360 : 0 }} transition={{ repeat: selected ? Infinity : 0, duration: 3, ease: "linear" }}>
+        <circle cx="126" cy="52" r="4" fill="#22d3ee" />
+        <circle cx="34" cy="112" r="3" fill="#a855f7" />
+      </motion.g>
+    </g>
   );
 }
 

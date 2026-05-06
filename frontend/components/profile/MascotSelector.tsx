@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { MentorAvatarId } from "@/components/auth/AuthProvider";
 import { MentorCharacter, mentorCopy } from "@/components/mentors/MentorCharacter";
 
-const avatars: MentorAvatarId[] = ["maanay", "sensei", "professor", "robo_bot"];
+const avatars: MentorAvatarId[] = ["maanay", "sensei", "professor", "robo_bot", "tulpar", "nomad", "snow_leopard", "astro"];
 
 type MascotSelectorProps = {
   selectedAvatarId: MentorAvatarId;
@@ -28,7 +28,7 @@ export function MascotSelector({ selectedAvatarId, onSelect }: MascotSelectorPro
         <div className="mt-2 text-xl font-bold">{selectedCopy.name}</div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-4">
+      <div className="mt-4 grid grid-cols-2 gap-4 xl:grid-cols-3">
         {avatars.map((avatarId) => {
           const isSelected = avatarId === selectedAvatarId;
           return (
