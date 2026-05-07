@@ -3,6 +3,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { JarqExperienceProvider } from "@/components/JarqExperience";
 import { HapticProvider } from "@/components/ui/HapticProvider";
 import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
+import { SiteHeader } from "@/components/home/SiteHeader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <JarqExperienceProvider>
           <AuthProvider>
+            <SiteHeader />
             {children}
             <HapticProvider />
             <MobileBottomNav />

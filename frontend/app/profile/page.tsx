@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { Camera, LogOut, Mail, Save, Settings, Sparkles } from "lucide-react";
+import { Award, BookOpen, CalendarCheck, Camera, Crown, Flame, GraduationCap, LogOut, Mail, Medal, Save, Settings, Sparkles, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { MentorAvatarId, useAuth } from "@/components/auth/AuthProvider";
@@ -11,6 +11,7 @@ import { hapticTap } from "@/components/ui/HapticProvider";
 import { ExperienceControls } from "@/components/ui/ExperienceControls";
 import { FuturisticBackground } from "@/components/ui/FuturisticBackground";
 import { MotionPage } from "@/components/ui/MotionPage";
+import { isAdminEmail } from "@/lib/admin";
 
 export default function ProfilePage() {
   return (
@@ -30,6 +31,16 @@ function ProfileContent() {
   const googlePhoto = typeof user?.user_metadata?.avatar_url === "string" ? user.user_metadata.avatar_url : null;
   const displayPhoto = profilePhoto ?? googlePhoto;
   const displayName = username || profile?.username || user?.user_metadata?.name || "JARQ student";
+  const isAdmin = isAdminEmail(user?.email);
+  const mentorLabel = selectedAvatarId.toUpperCase().replace("_", "-");
+  const rewards = [
+    { title: "Первый урок", text: "Старт в JARQ открыт", icon: Medal, active: true },
+    { title: "Первый день", text: "Профиль создан сегодня", icon: Flame, active: true },
+    { title: "Неделя стрика", text: "Осталось 4 дня", icon: CalendarCheck, active: false },
+    { title: "100 XP", text: "Награда за практику", icon: Trophy, active: true },
+    { title: "Английский", text: "Начни путь Beginner", icon: BookOpen, active: false },
+    { title: "Кодинг", text: "Открой Python миссию", icon: GraduationCap, active: false },
+  ];
 
   useEffect(() => {
     setUsername(profile?.username ?? "");
@@ -143,12 +154,63 @@ function ProfileContent() {
             </form>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              {["🔥 Стрик: 3 дня", "🚀 Уровень: Новичок", "🎭 Ментор: " + selectedAvatarId.toUpperCase().replace("_", "-")].map((item) => (
-                <div key={item} className="rounded-[28px] p-4 font-semibold text-transparent liquid-glass [background-image:linear-gradient(120deg,#f8fafc,#a5f3fc,#d8b4fe)] [-webkit-background-clip:text]">
-                  {item}
-                </div>
-              ))}
+              {[
+                { label: "Стрик", value: "3 дня", icon: Flame },
+                { label: "Уровень", value: "Новичок", icon: Crown },
+                { label: "Ментор", value: mentorLabel, icon: Sparkles },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.label} className="rounded-[28px] border border-white/[0.08] bg-slate-950/50 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[20px] bg-cyan-300/15 text-cyan-100">
+                        <Icon size={20} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-xs font-bold uppercase tracking-[0.14em] text-cyan-200">{item.label}</span>
+                        <span className="block truncate text-lg font-black text-white">{item.value}</span>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
+
+            <section className="rounded-[32px] p-5 liquid-glass">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-200">Награды</div>
+                  <h2 className="mt-1 text-2xl font-black">Мотивация ученика</h2>
+                </div>
+                <div className="grid h-12 w-12 place-items-center rounded-[22px] bg-purple-400/20 text-purple-100">
+                  <Award size={24} />
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {rewards.map((reward, index) => {
+                  const Icon = reward.icon;
+                  return (
+                    <motion.div
+                      key={reward.title}
+                      initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ type: "spring", stiffness: 350, damping: 26, delay: index * 0.04 }}
+                      className={`min-h-32 rounded-[28px] border p-4 ${
+                        reward.active
+                          ? "border-cyan-300/35 bg-cyan-300/10 shadow-[0_0_28px_rgba(34,211,238,0.14)]"
+                          : "border-white/[0.08] bg-slate-950/35 opacity-80"
+                      }`}
+                    >
+                      <div className={`grid h-11 w-11 place-items-center rounded-[20px] ${reward.active ? "bg-cyan-300 text-slate-950" : "bg-white/10 text-slate-300"}`}>
+                        <Icon size={20} />
+                      </div>
+                      <div className="mt-3 text-sm font-black text-white">{reward.title}</div>
+                      <div className="mt-1 text-xs font-semibold leading-relaxed jarq-muted">{reward.text}</div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </section>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <Link href="/courses" className="elastic-tap inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[24px] bg-cyan-300 px-5 text-base font-bold text-slate-950">
@@ -164,6 +226,13 @@ function ProfileContent() {
                 Выйти
               </button>
             </div>
+
+            {isAdmin ? (
+              <Link href="/admin" className="elastic-tap inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[24px] border border-purple-300/35 bg-purple-400/15 px-5 text-base font-bold text-purple-50 shadow-[0_0_30px_rgba(168,85,247,0.18)]">
+                <Crown size={18} />
+                Админ кабинет JARQ
+              </Link>
+            ) : null}
           </div>
 
           <MascotSelector selectedAvatarId={selectedAvatarId} onSelect={handleAvatarSelect} />
@@ -172,6 +241,7 @@ function ProfileContent() {
     </main>
   );
 }
+
 
 function initials(value: string): string {
   const parts = value.trim().split(/\s+/).filter(Boolean);

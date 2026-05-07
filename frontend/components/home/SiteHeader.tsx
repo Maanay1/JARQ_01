@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, BookOpen, Bot, Home, Menu, Sparkles, UserRound } from "lucide-react";
+import { BarChart3, BookOpen, Bot, Crown, Home, Menu, Sparkles, UserRound } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { isAdminEmail } from "@/lib/admin";
 
 export function SiteHeader() {
+  const { user } = useAuth();
+  const isAdmin = isAdminEmail(user?.email);
+
   return (
     <header className="fixed inset-x-0 top-0 z-40 hidden border-b border-white/10 bg-[#050b1a]/70 px-4 py-3 text-white backdrop-blur-2xl md:block sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
@@ -35,6 +40,12 @@ export function SiteHeader() {
             <UserRound size={16} />
             Профиль
           </Link>
+          {isAdmin ? (
+            <Link className="inline-flex items-center gap-2 transition hover:text-purple-200" href="/admin">
+              <Crown size={16} />
+              Админ
+            </Link>
+          ) : null}
           <Link className="transition hover:text-cyan-200" href="/chat">
             AI чат
           </Link>

@@ -27,6 +27,11 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 const DEFAULT_AVATAR: MentorAvatarId = "maanay";
+const LOCAL_USER_ID = "local-user";
+
+function usernameStorageKey(userId: string) {
+  return `jarq-profile-username:${userId}`;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -41,32 +46,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const savedAvatar = (window.localStorage.getItem("jarq-selected-avatar") as MentorAvatarId | null) ?? DEFAULT_AVATAR;
-    const fallbackUsername = user.user_metadata?.name ?? user.email?.split("@")[0] ?? "JARQ student";
+    const savedUsername = window.localStorage.getItem(usernameStorageKey(user.id));
+    const fallbackUsername = savedUsername ?? user.user_metadata?.name ?? user.email?.split("@")[0] ?? "JARQ student";
     const baseProfile: JarqProfile = {
       id: user.id,
       username: fallbackUsername,
       selected_avatar_id: savedAvatar,
     };
 
-    const { data, error } = await supabase
+    const { data: existingProfile, error: selectError } = await supabase
       .from("profiles")
-      .upsert(baseProfile, { onConflict: "id" })
+      .select("id, username, selected_avatar_id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!selectError && existingProfile) {
+      const normalizedProfile: JarqProfile = {
+        id: existingProfile.id,
+        username: existingProfile.username ?? fallbackUsername,
+        selected_avatar_id: normalizeAvatarId(existingProfile.selected_avatar_id ?? savedAvatar),
+      };
+      setProfile(normalizedProfile);
+      window.localStorage.setItem("jarq-selected-avatar", normalizedProfile.selected_avatar_id);
+      if (normalizedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), normalizedProfile.username);
+      return;
+    }
+
+    const { data: insertedProfile, error: insertError } = await supabase
+      .from("profiles")
+      .insert(baseProfile)
       .select("id, username, selected_avatar_id")
       .single();
 
-    if (error || !data) {
+    if (insertError || !insertedProfile) {
       setProfile(baseProfile);
       window.localStorage.setItem("jarq-selected-avatar", baseProfile.selected_avatar_id);
+      if (baseProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), baseProfile.username);
       return;
     }
 
     const normalizedProfile: JarqProfile = {
-      id: data.id,
-      username: data.username,
-      selected_avatar_id: normalizeAvatarId(data.selected_avatar_id),
+      id: insertedProfile.id,
+      username: insertedProfile.username ?? fallbackUsername,
+      selected_avatar_id: normalizeAvatarId(insertedProfile.selected_avatar_id),
     };
     setProfile(normalizedProfile);
     window.localStorage.setItem("jarq-selected-avatar", normalizedProfile.selected_avatar_id);
+    if (normalizedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), normalizedProfile.username);
   }, []);
 
   useEffect(() => {
@@ -138,9 +164,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (normalizedUpdates.selected_avatar_id) {
         window.localStorage.setItem("jarq-selected-avatar", normalizedUpdates.selected_avatar_id);
       }
+      if (typeof normalizedUpdates.username === "string") {
+        window.localStorage.setItem(usernameStorageKey(user?.id ?? LOCAL_USER_ID), normalizedUpdates.username);
+      }
 
       const nextProfile: JarqProfile = {
-        id: user?.id ?? "local-user",
+        id: user?.id ?? LOCAL_USER_ID,
         username: normalizedUpdates.username ?? profile?.username ?? "JARQ student",
         selected_avatar_id: normalizedUpdates.selected_avatar_id ?? profile?.selected_avatar_id ?? DEFAULT_AVATAR,
       };
@@ -155,11 +184,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (!error && data) {
-        setProfile({
+        const savedProfile = {
           id: data.id,
           username: data.username,
           selected_avatar_id: normalizeAvatarId(data.selected_avatar_id),
-        });
+        };
+        setProfile(savedProfile);
+        if (savedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), savedProfile.username);
       }
     },
     [profile, session?.user],

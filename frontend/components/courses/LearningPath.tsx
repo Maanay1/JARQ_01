@@ -71,7 +71,7 @@ export function LearningPath({ track }: LearningPathProps) {
               >
                 <div className={isLeft ? "md:order-1" : "md:order-3"}>{isLeft ? <LevelCard track={track} level={level} index={index} Icon={Icon} /> : null}</div>
                 <div className="relative order-1 flex justify-start md:order-2 md:justify-center">
-                  <div className={`grid h-16 w-16 place-items-center rounded-2xl border shadow-[0_0_45px_rgba(34,211,238,0.16)] backdrop-blur-xl ${level.locked ? "border-white/[0.12] bg-white/[0.08] jarq-muted" : "border-cyan-300/45 bg-cyan-300/20 text-cyan-100"}`}>
+                  <div className={`grid h-16 w-16 place-items-center rounded-2xl border shadow-[0_0_45px_rgba(34,211,238,0.16)] backdrop-blur-xl ${level.locked ? "border-purple-300/25 bg-purple-400/10 text-purple-100" : "border-cyan-300/45 bg-cyan-300/20 text-cyan-100"}`}>
                     {level.locked ? <LockKeyhole size={23} /> : <Icon size={25} />}
                   </div>
                 </div>
@@ -96,15 +96,16 @@ function LevelCard({
   index: number;
   Icon: LearningTrack["levels"][number]["icon"];
 }) {
-  const href = track.id === "english" && index === 0 ? "/lesson/english-beginner-alphabet-am" : track.id === "programming" && index === 0 ? "/lesson/programming-foundations-what-is-code" : "#";
+  const href = lessonHref(track.id, index);
+  const lessonLinks = levelLessonLinks(track.id, index);
 
   return (
-    <div className={`button-lift min-w-0 rounded-2xl p-5 transition hover:border-cyan-300/60 ${level.locked ? "opacity-70 jarq-soft" : "jarq-glass"}`}>
+    <div className="button-lift min-w-0 rounded-2xl p-5 transition hover:border-cyan-300/60 jarq-glass">
       <div className="flex min-w-0 items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] jarq-muted">
             Уровень {index + 1}
-            {level.locked ? <LockKeyhole size={14} /> : null}
+            {level.locked ? <span className="text-purple-200">скоро</span> : null}
           </div>
           <h2 className="mt-2 text-xl font-semibold jarq-text">{level.title}</h2>
           <p className="mt-2 text-sm leading-6 jarq-muted">{level.description}</p>
@@ -116,7 +117,7 @@ function LevelCard({
 
       <div className="mt-5">
         <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.12em] jarq-muted">
-          <span>{level.locked ? "Закрыто" : "Прогресс"}</span>
+          <span>{level.locked ? "Демо доступно" : "Прогресс"}</span>
           <span>+{level.xp} XP</span>
         </div>
         <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/10">
@@ -129,14 +130,24 @@ function LevelCard({
 
       <Link
         href={href}
-        aria-disabled={level.locked}
-        className={`mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition ${
-          level.locked ? "pointer-events-none bg-white/[0.08] jarq-muted" : "bg-cyan-300 text-slate-950 hover:bg-cyan-200"
-        }`}
+        className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-sm font-bold text-slate-950 transition hover:bg-cyan-200"
       >
-        {level.locked ? <LockKeyhole size={16} /> : <Play size={16} />}
-        {level.locked ? "Откроется позже" : "Начать"}
+        <Play size={16} />
+        Начать уровень
       </Link>
+
+      <div className="mt-3 grid gap-2">
+        {lessonLinks.map((lessonItem) => (
+          <Link
+            key={lessonItem.href}
+            href={lessonItem.href}
+            className="inline-flex min-h-10 items-center justify-between gap-2 rounded-xl border border-white/[0.08] px-3 text-xs font-bold jarq-soft hover:border-cyan-300"
+          >
+            <span>{lessonItem.title}</span>
+            <Play size={13} />
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
@@ -151,4 +162,55 @@ function Stat({ label, value, icon }: { label: string; value: string; icon?: Rea
       <div className="mt-1 text-lg font-semibold jarq-text">{value}</div>
     </div>
   );
+}
+
+function lessonHref(trackId: LearningTrack["id"], index: number): string {
+  return levelLessonLinks(trackId, index)[0]?.href ?? "/courses";
+}
+
+function levelLessonLinks(trackId: LearningTrack["id"], index: number): Array<{ title: string; href: string }> {
+  const english = [
+    [
+      ["Алфавит A-M", "/lesson/english-beginner-alphabet-am"],
+      ["Алфавит N-Z", "/lesson/english-beginner-alphabet-nz"],
+      ["Гласные", "/lesson/english-beginner-vowels"],
+    ],
+    [
+      ["TO BE", "/lesson/english-elementary-to-be"],
+      ["Местоимения", "/lesson/english-elementary-pronouns"],
+      ["Present Simple", "/lesson/english-elementary-present-simple"],
+    ],
+    [
+      ["Past Simple", "/lesson/english-pre-past-regular"],
+      ["Future Simple", "/lesson/english-pre-future-simple"],
+      ["Question words", "/lesson/english-pre-question-words"],
+    ],
+    [["Idioms demo", "/lesson/english-pre-hobbies"]],
+    [["Business demo", "/lesson/english-elementary-shopping"]],
+    [["Speaking demo", "/lesson/english-pre-present-perfect"]],
+    [["Final demo", "/lesson/english-beginner-final"]],
+  ];
+  const programming = [
+    [
+      ["Что такое код", "/lesson/programming-foundations-what-is-code"],
+      ["Переменные", "/lesson/programming-foundations-variables"],
+      ["Условия", "/lesson/programming-foundations-conditions"],
+    ],
+    [
+      ["Hello World", "/lesson/python-beginner-hello-world"],
+      ["Переменные", "/lesson/python-beginner-variables"],
+      ["Типы данных", "/lesson/python-beginner-types"],
+    ],
+    [
+      ["Input", "/lesson/python-beginner-input"],
+      ["Math", "/lesson/python-beginner-math"],
+      ["If/else", "/lesson/python-beginner-if"],
+    ],
+    [["Web demo", "/lesson/programming-foundations-functions"]],
+    [["JavaScript logic", "/lesson/programming-foundations-conditions"]],
+    [["Python loops", "/lesson/python-beginner-for"]],
+    [["Mini project", "/lesson/python-beginner-project-guess-number"]],
+  ];
+  const list = trackId === "english" ? english : programming;
+  return (list[index] ?? list[0]).map(([title, href]) => ({ title, href }));
 }
