@@ -1,12 +1,21 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/chat/page": "app/chat/page.js",
-  "/courses/[courseId]/page": "app/courses/[courseId]/page.js",
+  "/admin/content/page": "app/admin/content/page.js",
+  "/admin/lessons/page": "app/admin/lessons/page.js",
   "/admin/page": "app/admin/page.js",
-  "/login/page": "app/login/page.js",
+  "/admin/subscriptions/page": "app/admin/subscriptions/page.js",
+  "/chat/page": "app/chat/page.js",
   "/lesson/[lessonId]/page": "app/lesson/[lessonId]/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/courses/page": "app/courses/page.js",
+  "/login/page": "app/login/page.js",
+  "/reels/page": "app/reels/page.js",
+  "/progress/page": "app/progress/page.js",
   "/page": "app/page.js",
   "/profile/page": "app/profile/page.js",
-  "/progress/page": "app/progress/page.js",
-  "/courses/page": "app/courses/page.js"
+  "/subscription/page": "app/subscription/page.js",
+  "/subscription/cancel/page": "app/subscription/cancel/page.js",
+  "/courses/[courseId]/page": "app/courses/[courseId]/page.js",
+  "/subscription/success/page": "app/subscription/success/page.js",
+  "/api/tutor/chat/route": "app/api/tutor/chat/route.js"
 }

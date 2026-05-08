@@ -1,12 +1,21 @@
 {
   "/_not-found/page": "/_not-found",
-  "/chat/page": "/chat",
-  "/courses/[courseId]/page": "/courses/[courseId]",
+  "/admin/content/page": "/admin/content",
+  "/admin/lessons/page": "/admin/lessons",
   "/admin/page": "/admin",
-  "/login/page": "/login",
+  "/admin/subscriptions/page": "/admin/subscriptions",
+  "/chat/page": "/chat",
   "/lesson/[lessonId]/page": "/lesson/[lessonId]",
+  "/admin/users/page": "/admin/users",
+  "/courses/page": "/courses",
+  "/login/page": "/login",
+  "/reels/page": "/reels",
+  "/progress/page": "/progress",
   "/page": "/",
   "/profile/page": "/profile",
-  "/progress/page": "/progress",
-  "/courses/page": "/courses"
+  "/subscription/page": "/subscription",
+  "/subscription/cancel/page": "/subscription/cancel",
+  "/courses/[courseId]/page": "/courses/[courseId]",
+  "/subscription/success/page": "/subscription/success",
+  "/api/tutor/chat/route": "/api/tutor/chat"
 }

@@ -56,6 +56,30 @@
       "namedRegex": "^/admin(?:/)?$"
     },
     {
+      "page": "/admin/content",
+      "regex": "^/admin/content(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/content(?:/)?$"
+    },
+    {
+      "page": "/admin/lessons",
+      "regex": "^/admin/lessons(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/lessons(?:/)?$"
+    },
+    {
+      "page": "/admin/subscriptions",
+      "regex": "^/admin/subscriptions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/subscriptions(?:/)?$"
+    },
+    {
+      "page": "/admin/users",
+      "regex": "^/admin/users(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/users(?:/)?$"
+    },
+    {
       "page": "/chat",
       "regex": "^/chat(?:/)?$",
       "routeKeys": {},
@@ -84,6 +108,30 @@
       "regex": "^/progress(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/progress(?:/)?$"
+    },
+    {
+      "page": "/reels",
+      "regex": "^/reels(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/reels(?:/)?$"
+    },
+    {
+      "page": "/subscription",
+      "regex": "^/subscription(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subscription(?:/)?$"
+    },
+    {
+      "page": "/subscription/cancel",
+      "regex": "^/subscription/cancel(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subscription/cancel(?:/)?$"
+    },
+    {
+      "page": "/subscription/success",
+      "regex": "^/subscription/success(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subscription/success(?:/)?$"
     }
   ],
   "dataRoutes": [],
