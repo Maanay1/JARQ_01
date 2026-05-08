@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, Brain, Flame, Mic, Sparkles, Wand2 } from "lucide-react";
+import { Bot, Brain, Flame, Mic, Sparkles, Wand2, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { MaaniyCharacter } from "@/components/MaaniyCharacter";
 import { MaaniyMood, useMaaniyInteraction } from "@/components/maaniy/useMaaniyInteraction";
@@ -55,6 +55,14 @@ export function HeroSection() {
             >
               <Bot size={18} />
               Open AI Chat
+            </Link>
+            <Link
+              href="/reels"
+              {...hoverProps("click")}
+              className="button-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-cyan-300 to-purple-300 px-5 py-3 text-sm font-black text-slate-950 shadow-[0_0_34px_rgba(168,85,247,0.32)] transition hover:brightness-110"
+            >
+              <Zap size={18} />
+              JARQ Reels
             </Link>
             <Link
               href="#voice-demo"
