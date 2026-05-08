@@ -362,6 +362,8 @@ function isProviderWarning(content: string): boolean {
   return (
     lowerContent.includes("api key is not configured") ||
     lowerContent.includes("openrouter_api_key is not configured") ||
-    lowerContent.includes("add openrouter_api_key")
+    lowerContent.includes("add openrouter_api_key") ||
+    lowerContent.includes("openrouter не принял api ключ") ||
+    lowerContent.includes("user not found")
   );
 }

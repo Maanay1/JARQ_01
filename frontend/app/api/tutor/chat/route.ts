@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
   if (!response.ok) {
     const detail = await response.text();
-    return NextResponse.json({ detail: detail || "OpenRouter request failed." }, { status: response.status });
+    return NextResponse.json({ detail: formatOpenRouterError(response.status, detail) }, { status: response.status });
   }
 
   const data = await response.json();
@@ -93,4 +93,33 @@ export async function POST(request: Request) {
     memory_used: [],
     suggested_next_steps: ["Продолжить практику", "Попросить пример", "Попросить мини-тест"],
   });
+}
+
+function formatOpenRouterError(status: number, detail: string): string {
+  let providerMessage = detail;
+
+  try {
+    const parsed = JSON.parse(detail) as { error?: { message?: string; code?: number | string }; message?: string };
+    providerMessage = parsed.error?.message ?? parsed.message ?? detail;
+  } catch {
+    // Keep provider text when it is not JSON.
+  }
+
+  const lowerMessage = providerMessage.toLowerCase();
+  if (status === 401 || lowerMessage.includes("user not found")) {
+    return (
+      "OpenRouter не принял API ключ: User not found. " +
+      "Создай новый ключ в OpenRouter и добавь его в Vercel → Environment Variables как OPENROUTER_API_KEY без кавычек и пробелов, потом сделай Redeploy."
+    );
+  }
+
+  if (status === 402 || lowerMessage.includes("credits")) {
+    return "На OpenRouter закончились кредиты или не включена оплата. Пополни баланс OpenRouter и повтори запрос.";
+  }
+
+  if (status === 429) {
+    return "OpenRouter временно ограничил запросы. Подожди немного и попробуй ещё раз.";
+  }
+
+  return `OpenRouter вернул ошибку ${status}: ${providerMessage}`;
 }
