@@ -359,5 +359,9 @@ function TypingDots() {
 
 function isProviderWarning(content: string): boolean {
   const lowerContent = content.toLowerCase();
-  return lowerContent.includes("api key is not configured") || lowerContent.includes("add openrouter_api_key");
+  return (
+    lowerContent.includes("api key is not configured") ||
+    lowerContent.includes("openrouter_api_key is not configured") ||
+    lowerContent.includes("add openrouter_api_key")
+  );
 }

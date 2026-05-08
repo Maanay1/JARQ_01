@@ -6,7 +6,9 @@ export async function sendTutorMessage(params: {
   personaId: PersonaId;
   provider: ProviderId;
 }): Promise<TutorChatResponse> {
-  return apiRequest<TutorChatResponse>("/api/v1/tutor/chat", {
+  const endpoint = process.env.NEXT_PUBLIC_API_BASE_URL ? "/api/v1/tutor/chat" : "/api/tutor/chat";
+
+  return apiRequest<TutorChatResponse>(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

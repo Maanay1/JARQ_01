@@ -111,6 +111,21 @@ export function VoiceChat({
   async function submitAudio(audioBlob: Blob) {
     setStatus("processing");
 
+    if (isVoiceDemoMode) {
+      setResponse({
+        transcript: "Демо-режим: микрофон записан, но STT/TTS ключи ещё не подключены.",
+        jarq: {
+          text: "Я слышу, что ты готов тренироваться. Подключим STT/TTS ключи — и я буду отвечать голосом.",
+          emotion: "calm",
+          tone: "поддерживающе",
+          action: "Жду подключение голосовых ключей",
+        },
+        audio_url: "",
+      });
+      setStatus("idle");
+      return;
+    }
+
     try {
       const voiceResponse = await sendVoiceChat({
         audio: audioBlob,

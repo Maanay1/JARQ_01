@@ -23,7 +23,8 @@ export function UserProgress({ userId = "00000000-0000-0000-0000-000000000000" }
         if (isMounted) setProgress(data);
       } catch (caughtError) {
         if (isMounted) {
-          setError(caughtError instanceof Error ? caughtError.message : "Не удалось загрузить прогресс.");
+          setProgress(demoProgress(userId));
+          setError("Демо-статистика: backend прогресса сейчас не подключён.");
         }
       } finally {
         if (isMounted) setIsLoading(false);
@@ -123,6 +124,30 @@ export function UserProgress({ userId = "00000000-0000-0000-0000-000000000000" }
       ) : null}
     </section>
   );
+}
+
+function demoProgress(userId: string): UserProgressData {
+  return {
+    user_id: userId,
+    level: 2,
+    xp: 240,
+    streak: 3,
+    completed_lessons: 5,
+    known_mistakes: 2,
+    weak_topics: ["order coffee", "Present Simple"],
+    latest_mistakes: [
+      {
+        id: "demo-1",
+        user_id: userId,
+        subject: "English",
+        mistake: "I want coffee please",
+        correction: "I would like a coffee, please.",
+        explanation: "Так звучит вежливее и естественнее.",
+        created_at: new Date().toISOString(),
+      },
+    ],
+    jarq_recommendation: "Сегодня потренируй короткий диалог: заказ кофе, просьба повторить и благодарность.",
+  };
 }
 
 function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "jarq-v1";
+const CACHE_NAME = "jarq-v2";
 const STATIC_ASSETS = ["/", "/courses/english", "/courses/programming", "/manifest.json", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
