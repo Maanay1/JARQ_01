@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, BookOpen, Bot, Crown, Home, Menu, Sparkles, UserRound } from "lucide-react";
+import { BarChart3, BookOpen, Bot, Crown, Home, Menu, Sparkles, UserRound, Zap } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export function SiteHeader() {
@@ -34,6 +34,10 @@ export function SiteHeader() {
           <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/progress">
             <BarChart3 size={16} />
             Прогресс
+          </Link>
+          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/reels">
+            <Zap size={16} />
+            Reels
           </Link>
           <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/profile">
             <UserRound size={16} />

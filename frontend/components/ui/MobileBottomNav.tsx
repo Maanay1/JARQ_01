@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, BookOpen, Home, UserRound } from "lucide-react";
+import { BarChart3, BookOpen, Home, UserRound, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "Главная", icon: Home, match: (path: string) => path === "/" },
   { href: "/courses", label: "Уроки", icon: BookOpen, match: (path: string) => path.startsWith("/courses") || path.startsWith("/lesson") },
+  { href: "/reels", label: "Reels", icon: Zap, match: (path: string) => path.startsWith("/reels") },
   { href: "/progress", label: "Прогресс", icon: BarChart3, match: (path: string) => path.startsWith("/progress") },
   { href: "/profile", label: "Профиль", icon: UserRound, match: (path: string) => path.startsWith("/profile") },
 ];
@@ -17,7 +18,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 h-[60px] border-t border-white/[0.05] bg-slate-950/65 px-2 pb-[env(safe-area-inset-bottom)] text-white shadow-[0_-8px_32px_rgba(0,0,0,0.37)] backdrop-blur-xl md:hidden">
-      <div className="mx-auto grid h-full max-w-md grid-cols-4">
+      <div className="mx-auto grid h-full max-w-md grid-cols-5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.match(pathname);
