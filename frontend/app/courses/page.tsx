@@ -4,6 +4,7 @@ import { ExperienceControls } from "@/components/ui/ExperienceControls";
 import { FuturisticBackground } from "@/components/ui/FuturisticBackground";
 import { MotionPage } from "@/components/ui/MotionPage";
 import { learningTracks } from "@/lib/learning-paths";
+import { FreeLessonCounter } from "@/components/subscription/FreeLessonCounter";
 
 export default async function CoursesPage() {
   return (
@@ -46,6 +47,10 @@ export default async function CoursesPage() {
               </div>
             </div>
           </header>
+
+          <div className="mt-6">
+            <FreeLessonCounter />
+          </div>
 
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             {learningTracks.map((track) => {

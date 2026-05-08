@@ -6,6 +6,7 @@ import { LearningPath } from "@/components/courses/LearningPath";
 import { ExperienceControls } from "@/components/ui/ExperienceControls";
 import { FuturisticBackground } from "@/components/ui/FuturisticBackground";
 import { MotionPage } from "@/components/ui/MotionPage";
+import { FreeLessonCounter } from "@/components/subscription/FreeLessonCounter";
 
 type CourseLessonsPageProps = {
   params: Promise<{ courseId: string }>;
@@ -35,6 +36,10 @@ export default async function CourseLessonsPage({ params }: CourseLessonsPagePro
               <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Карта уроков</h1>
             </header>
 
+            <div className="mt-6">
+              <FreeLessonCounter />
+            </div>
+
             <div className="mt-6 grid min-w-0 gap-3">
               {lessons.map((lesson, index) => (
                 <Link
@@ -58,7 +63,7 @@ export default async function CourseLessonsPage({ params }: CourseLessonsPagePro
                   <div className="flex items-center">
                     <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-cyan-300 px-3 py-2 text-sm font-bold text-slate-950 md:w-auto md:min-h-10">
                       <Play size={16} />
-                      Старт
+                      {index >= 2 ? "Pro" : "Старт"}
                     </span>
                   </div>
                 </Link>

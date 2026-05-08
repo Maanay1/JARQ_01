@@ -1,13 +1,16 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, Code2, Headphones, HelpCircle, Loader2, Mic, Play, RotateCcw, Sparkles, Trophy, Volume2, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, Code2, Headphones, HelpCircle, Loader2, Lock, Mic, Play, RotateCcw, Sparkles, Trophy, Volume2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Lesson } from "@/lib/api";
 import { InteractiveStep, getInteractiveLesson } from "@/lib/interactive-lessons";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { MentorCharacter } from "@/components/mentors/MentorCharacter";
 import { hapticError, hapticSuccess } from "@/components/ui/HapticProvider";
+import { FreeLessonCounter } from "@/components/subscription/FreeLessonCounter";
+import { getSubscriptionPlan, incrementTodayLessonUsage, inferLessonNumber, isProPlan, remainingFreeLessonsToday, SubscriptionPlan } from "@/lib/subscription";
 
 type LessonRunnerProps = {
   lesson: Lesson;
@@ -49,8 +52,15 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   const [isListening, setIsListening] = useState(false);
   const [codeOutput, setCodeOutput] = useState("");
   const [isComplete, setIsComplete] = useState(false);
+  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>("free");
+  const [freeLessonsRemaining, setFreeLessonsRemaining] = useState(5);
   const currentStep = steps[stepIndex];
   const progress = Math.round(((stepIndex + (checkState === "correct" ? 1 : 0)) / steps.length) * 100);
+  const lessonNumber = inferLessonNumber(interactiveLesson.id, lesson.order_index);
+  const isPro = isProPlan(subscriptionPlan);
+  const isLockedByLesson = !isPro && lessonNumber > 2;
+  const isLockedByDailyLimit = !isPro && freeLessonsRemaining <= 0;
+  const isLocked = isLockedByLesson || isLockedByDailyLimit;
 
   useEffect(() => {
     if (!xpBurst) return;
@@ -61,6 +71,20 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   useEffect(() => {
     resetStepState();
   }, [stepIndex]);
+
+  useEffect(() => {
+    function syncSubscription() {
+      setSubscriptionPlan(getSubscriptionPlan());
+      setFreeLessonsRemaining(remainingFreeLessonsToday());
+    }
+    syncSubscription();
+    window.addEventListener("jarq-subscription-change", syncSubscription);
+    window.addEventListener("jarq-lesson-usage-change", syncSubscription);
+    return () => {
+      window.removeEventListener("jarq-subscription-change", syncSubscription);
+      window.removeEventListener("jarq-lesson-usage-change", syncSubscription);
+    };
+  }, []);
 
   function resetStepState() {
     setAnswer("");
@@ -124,6 +148,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
       unlocked_next: score >= 70,
     };
     window.localStorage.setItem(`jarq-lesson-progress:${interactiveLesson.id}`, JSON.stringify(payload));
+    if (!isProPlan(getSubscriptionPlan())) incrementTodayLessonUsage();
     setIsComplete(true);
   }
 
@@ -183,7 +208,8 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   }
 
   return (
-    <div className="mt-3 grid min-w-0 gap-4 pb-28 lg:mt-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:pb-0">
+    <div className="relative mt-3 grid min-w-0 gap-4 pb-28 lg:mt-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:pb-0">
+      {isLocked ? <ProLessonOverlay reason={isLockedByDailyLimit ? "daily" : "lesson"} /> : null}
       <div className="fixed inset-x-0 top-0 z-30 h-1 bg-white/10 md:hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-cyan-300 to-purple-400"
@@ -224,6 +250,9 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
       </aside>
 
       <section className="soft-glow min-w-0 rounded-[32px] p-4 liquid-glass sm:p-6">
+        <div className="mb-4">
+          <FreeLessonCounter />
+        </div>
         <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="min-w-0">
             <div className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-200">
@@ -312,6 +341,32 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
           </button>
         </div>
       </section>
+    </div>
+  );
+}
+
+function ProLessonOverlay({ reason }: { reason: "lesson" | "daily" }) {
+  return (
+    <div className="absolute inset-0 z-50 grid place-items-center rounded-[36px] bg-slate-950/45 p-4 backdrop-blur-md">
+      <motion.div
+        initial={{ opacity: 0, y: 18, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 350, damping: 26 }}
+        className="max-w-md rounded-[32px] border border-cyan-300/30 bg-slate-950/85 p-6 text-center shadow-[0_24px_80px_rgba(34,211,238,0.16)] backdrop-blur-xl"
+      >
+        <div className="mx-auto grid h-16 w-16 place-items-center rounded-[26px] bg-cyan-300 text-slate-950">
+          <Lock size={30} />
+        </div>
+        <h2 className="mt-5 text-3xl font-black">Доступно в Pro</h2>
+        <p className="mt-3 text-sm leading-6 jarq-muted">
+          {reason === "daily"
+            ? "Лимит бесплатных уроков на сегодня закончился. Pro открывает безлимитное обучение."
+            : "Бесплатно доступны первые 2 урока каждого курса. Pro открывает весь путь обучения."}
+        </p>
+        <Link href="/subscription" className="elastic-tap mt-6 inline-flex min-h-14 w-full items-center justify-center rounded-[24px] bg-cyan-300 px-5 text-base font-black text-slate-950">
+          Получить Pro
+        </Link>
+      </motion.div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowLeft, Flame, LockKeyhole, Play, Star, Trophy } from "lucide-react";
 import { LearningTrack, userLevelFromXp } from "@/lib/learning-paths";
+import { FreeLessonCounter } from "@/components/subscription/FreeLessonCounter";
 
 type LearningPathProps = {
   track: LearningTrack;
@@ -56,6 +57,10 @@ export function LearningPath({ track }: LearningPathProps) {
           </div>
         </div>
       </header>
+
+      <div className="mt-6">
+        <FreeLessonCounter />
+      </div>
 
       <div className="relative mt-10 pb-8">
         <div className="absolute left-1/2 top-8 hidden h-[calc(100%-4rem)] w-px -translate-x-1/2 bg-gradient-to-b from-cyan-300/70 via-purple-300/40 to-transparent md:block" />
@@ -137,14 +142,17 @@ function LevelCard({
       </Link>
 
       <div className="mt-3 grid gap-2">
-        {lessonLinks.map((lessonItem) => (
+        {lessonLinks.map((lessonItem, lessonIndex) => (
           <Link
             key={lessonItem.href}
             href={lessonItem.href}
             className="inline-flex min-h-10 items-center justify-between gap-2 rounded-xl border border-white/[0.08] px-3 text-xs font-bold jarq-soft hover:border-cyan-300"
           >
             <span>{lessonItem.title}</span>
-            <Play size={13} />
+            <span className="inline-flex items-center gap-1">
+              {lessonIndex >= 2 ? <span className="rounded-full bg-purple-400/20 px-2 py-0.5 text-purple-100">Pro</span> : null}
+              <Play size={13} />
+            </span>
           </Link>
         ))}
       </div>

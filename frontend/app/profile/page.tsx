@@ -12,6 +12,7 @@ import { ExperienceControls } from "@/components/ui/ExperienceControls";
 import { FuturisticBackground } from "@/components/ui/FuturisticBackground";
 import { MotionPage } from "@/components/ui/MotionPage";
 import { isAdminEmail } from "@/lib/admin";
+import { getSubscriptionPlan, isProPlan, SubscriptionPlan } from "@/lib/subscription";
 
 export default function ProfilePage() {
   return (
@@ -27,11 +28,13 @@ function ProfileContent() {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>("free");
   const provider = user?.app_metadata?.provider ? String(user.app_metadata.provider) : "email";
   const googlePhoto = typeof user?.user_metadata?.avatar_url === "string" ? user.user_metadata.avatar_url : null;
   const displayPhoto = profilePhoto ?? googlePhoto;
   const displayName = username || profile?.username || user?.user_metadata?.name || "JARQ student";
   const isAdmin = isAdminEmail(user?.email);
+  const isPro = isProPlan(subscriptionPlan);
   const mentorLabel = selectedAvatarId.toUpperCase().replace("_", "-");
   const rewards = [
     { title: "Первый урок", text: "Старт в JARQ открыт", icon: Medal, active: true },
@@ -48,6 +51,15 @@ function ProfileContent() {
 
   useEffect(() => {
     setProfilePhoto(window.localStorage.getItem("jarq-profile-photo"));
+  }, []);
+
+  useEffect(() => {
+    function syncSubscription() {
+      setSubscriptionPlan(getSubscriptionPlan());
+    }
+    syncSubscription();
+    window.addEventListener("jarq-subscription-change", syncSubscription);
+    return () => window.removeEventListener("jarq-subscription-change", syncSubscription);
   }, []);
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
@@ -118,9 +130,16 @@ function ProfileContent() {
                     <Sparkles size={15} />
                     Личный кабинет
                   </div>
-                  <h1 className="mt-3 text-4xl font-black leading-none text-transparent [background:linear-gradient(100deg,#f8fafc,#67e8f9,#c084fc,#f8fafc)] [-webkit-background-clip:text]">
-                    {displayName}
-                  </h1>
+                  <div className="mt-3 flex min-w-0 flex-wrap items-center justify-center gap-2 sm:justify-start">
+                    <h1 className="min-w-0 text-4xl font-black leading-none text-transparent [background:linear-gradient(100deg,#f8fafc,#67e8f9,#c084fc,#f8fafc)] [-webkit-background-clip:text]">
+                      {displayName}
+                    </h1>
+                    {isPro ? (
+                      <span className="inline-flex items-center rounded-full bg-yellow-300 px-3 py-1 text-sm font-black text-slate-950 shadow-[0_0_24px_rgba(250,204,21,0.32)]">
+                        ⭐ PRO
+                      </span>
+                    ) : null}
+                  </div>
                   <div className="mt-3 flex min-w-0 flex-col gap-2 text-sm font-semibold jarq-muted sm:flex-row sm:flex-wrap">
                     <span className="inline-flex min-w-0 items-center justify-center gap-2 rounded-full bg-white/10 px-3 py-2 sm:justify-start">
                       <Mail size={15} />
