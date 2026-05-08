@@ -11,7 +11,6 @@ import { hapticTap } from "@/components/ui/HapticProvider";
 import { ExperienceControls } from "@/components/ui/ExperienceControls";
 import { FuturisticBackground } from "@/components/ui/FuturisticBackground";
 import { MotionPage } from "@/components/ui/MotionPage";
-import { isAdminEmail } from "@/lib/admin";
 import { getSubscriptionPlan, isProPlan, SubscriptionPlan } from "@/lib/subscription";
 
 export default function ProfilePage() {
@@ -33,7 +32,7 @@ function ProfileContent() {
   const googlePhoto = typeof user?.user_metadata?.avatar_url === "string" ? user.user_metadata.avatar_url : null;
   const displayPhoto = profilePhoto ?? googlePhoto;
   const displayName = username || profile?.username || user?.user_metadata?.name || "JARQ student";
-  const isAdmin = isAdminEmail(user?.email);
+  const isAdmin = profile?.role === "admin";
   const isPro = isProPlan(subscriptionPlan);
   const mentorLabel = selectedAvatarId.toUpperCase().replace("_", "-");
   const rewards = [

@@ -10,6 +10,7 @@ export type JarqProfile = {
   id: string;
   username: string | null;
   selected_avatar_id: MentorAvatarId;
+  role: string | null;
 };
 
 type AuthContextValue = {
@@ -28,9 +29,21 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 const DEFAULT_AVATAR: MentorAvatarId = "maanay";
 const LOCAL_USER_ID = "local-user";
+const ADMIN_ROLE_COOKIE = "jarq-admin-role";
 
 function usernameStorageKey(userId: string) {
   return `jarq-profile-username:${userId}`;
+}
+
+function syncAdminRoleCookie(role?: string | null) {
+  if (typeof document === "undefined") return;
+  const normalizedRole = role === "admin" ? "admin" : "user";
+  document.cookie = `${ADMIN_ROLE_COOKIE}=${normalizedRole}; path=/; max-age=2592000; SameSite=Lax`;
+}
+
+function clearAdminRoleCookie() {
+  if (typeof document === "undefined") return;
+  document.cookie = `${ADMIN_ROLE_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -52,21 +65,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       id: user.id,
       username: fallbackUsername,
       selected_avatar_id: savedAvatar,
+      role: "user",
     };
 
     const { data: existingProfile, error: selectError } = await supabase
       .from("profiles")
-      .select("id, username, selected_avatar_id")
+      .select("*")
       .eq("id", user.id)
       .maybeSingle();
 
     if (!selectError && existingProfile) {
+      const rawProfile = existingProfile as Record<string, unknown>;
       const normalizedProfile: JarqProfile = {
-        id: existingProfile.id,
-        username: existingProfile.username ?? fallbackUsername,
-        selected_avatar_id: normalizeAvatarId(existingProfile.selected_avatar_id ?? savedAvatar),
+        id: String(rawProfile.id ?? user.id),
+        username: normalizeString(rawProfile.username ?? rawProfile.name) ?? fallbackUsername,
+        selected_avatar_id: normalizeAvatarId(rawProfile.selected_avatar_id ?? savedAvatar),
+        role: normalizeString(rawProfile.role) ?? "user",
       };
       setProfile(normalizedProfile);
+      void touchProfile(user.id, user.email);
+      syncAdminRoleCookie(normalizedProfile.role);
       window.localStorage.setItem("jarq-selected-avatar", normalizedProfile.selected_avatar_id);
       if (normalizedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), normalizedProfile.username);
       return;
@@ -74,12 +92,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: insertedProfile, error: insertError } = await supabase
       .from("profiles")
-      .insert(baseProfile)
+      .insert({
+        ...baseProfile,
+        name: fallbackUsername,
+        email: user.email ?? null,
+        last_seen: new Date().toISOString(),
+      })
       .select("id, username, selected_avatar_id")
       .single();
 
     if (insertError || !insertedProfile) {
       setProfile(baseProfile);
+      syncAdminRoleCookie(baseProfile.role);
       window.localStorage.setItem("jarq-selected-avatar", baseProfile.selected_avatar_id);
       if (baseProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), baseProfile.username);
       return;
@@ -89,8 +113,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       id: insertedProfile.id,
       username: insertedProfile.username ?? fallbackUsername,
       selected_avatar_id: normalizeAvatarId(insertedProfile.selected_avatar_id),
+      role: "user",
     };
     setProfile(normalizedProfile);
+    syncAdminRoleCookie(normalizedProfile.role);
     window.localStorage.setItem("jarq-selected-avatar", normalizedProfile.selected_avatar_id);
     if (normalizedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), normalizedProfile.username);
   }, []);
@@ -151,6 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return;
     await supabase.auth.signOut();
     setProfile(null);
+    clearAdminRoleCookie();
   }, []);
 
   const updateProfile = useCallback(
@@ -172,6 +199,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: user?.id ?? LOCAL_USER_ID,
         username: normalizedUpdates.username ?? profile?.username ?? "JARQ student",
         selected_avatar_id: normalizedUpdates.selected_avatar_id ?? profile?.selected_avatar_id ?? DEFAULT_AVATAR,
+        role: profile?.role ?? "user",
       };
 
       setProfile(nextProfile);
@@ -180,16 +208,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase
         .from("profiles")
         .upsert({ id: user.id, ...normalizedUpdates }, { onConflict: "id" })
-        .select("id, username, selected_avatar_id")
+        .select("*")
         .single();
 
       if (!error && data) {
+        const rawProfile = data as Record<string, unknown>;
         const savedProfile = {
-          id: data.id,
-          username: data.username,
-          selected_avatar_id: normalizeAvatarId(data.selected_avatar_id),
+          id: String(rawProfile.id ?? user.id),
+          username: normalizeString(rawProfile.username ?? rawProfile.name),
+          selected_avatar_id: normalizeAvatarId(rawProfile.selected_avatar_id),
+          role: normalizeString(rawProfile.role) ?? nextProfile.role,
         };
         setProfile(savedProfile);
+        syncAdminRoleCookie(savedProfile.role);
         if (savedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), savedProfile.username);
       }
     },
@@ -234,4 +265,16 @@ function normalizeAvatarId(value: unknown): MentorAvatarId {
     value === "maanay"
     ? value
     : DEFAULT_AVATAR;
+}
+
+function normalizeString(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+async function touchProfile(userId: string, email?: string | null) {
+  if (!supabase) return;
+  await supabase
+    .from("profiles")
+    .update({ email: email ?? null, last_seen: new Date().toISOString() })
+    .eq("id", userId);
 }

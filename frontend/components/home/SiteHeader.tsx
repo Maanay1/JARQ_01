@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { BarChart3, BookOpen, Bot, Crown, Home, Menu, Sparkles, UserRound } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { isAdminEmail } from "@/lib/admin";
 
 export function SiteHeader() {
-  const { user } = useAuth();
-  const isAdmin = isAdminEmail(user?.email);
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === "admin";
 
   return (
     <header className="fixed inset-x-0 top-0 z-40 hidden border-b border-white/10 bg-[#050b1a]/70 px-4 py-3 text-white backdrop-blur-2xl md:block sm:px-6 lg:px-8">
