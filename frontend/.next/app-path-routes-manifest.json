@@ -1,1 +1,12 @@
-{"/_not-found/page":"/_not-found","/admin/page":"/admin","/courses/[courseId]/page":"/courses/[courseId]","/courses/page":"/courses","/page":"/","/chat/page":"/chat","/progress/page":"/progress","/profile/page":"/profile","/lesson/[lessonId]/page":"/lesson/[lessonId]","/login/page":"/login"}
+{
+  "/_not-found/page": "/_not-found",
+  "/chat/page": "/chat",
+  "/courses/[courseId]/page": "/courses/[courseId]",
+  "/admin/page": "/admin",
+  "/login/page": "/login",
+  "/lesson/[lessonId]/page": "/lesson/[lessonId]",
+  "/page": "/",
+  "/profile/page": "/profile",
+  "/progress/page": "/progress",
+  "/courses/page": "/courses"
+}
