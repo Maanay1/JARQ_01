@@ -137,6 +137,33 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../app/media/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/media">> = Specific
+  const handler = {} as typeof import("../../app/media/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/media/vocabulary/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/media/vocabulary">> = Specific
+  const handler = {} as typeof import("../../app/media/vocabulary/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/media/watch/[id]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/media/watch/[id]">> = Specific
+  const handler = {} as typeof import("../../app/media/watch/[id]/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/">> = Specific
