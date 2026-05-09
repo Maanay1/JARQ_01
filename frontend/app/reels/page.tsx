@@ -3,19 +3,24 @@
 import { TouchEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Code2, Languages, MessageCircle, Share2, Volume2, X, Zap } from "lucide-react";
+import { Bookmark, BookmarkCheck, Check, Code2, Languages, MessageCircle, Share2, Volume2, X, Zap } from "lucide-react";
 import { MaaniyCharacter } from "@/components/MaaniyCharacter";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticError, hapticSuccess, hapticTap } from "@/components/ui/HapticProvider";
 import { getSubscriptionPlan, isProPlan } from "@/lib/subscription";
 import { ReelCard, ReelCategory, reels } from "@/lib/reels-data";
+import { supabase } from "@/lib/supabase";
 
 type Filter = "all" | ReelCategory;
 type AnswerState = "correct" | "wrong" | null;
 
 const FREE_REELS_LIMIT = 10;
 const DAILY_REELS_KEY = "jarq-reels-daily-usage";
+const WATCHED_REELS_KEY = "jarq_watched_reels";
+const SAVED_REELS_KEY = "jarq_saved_reels";
 
 export default function ReelsPage() {
+  const { user } = useAuth();
   const [filter, setFilter] = useState<Filter>("all");
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -24,14 +29,22 @@ export default function ReelsPage() {
   const [xpBursts, setXpBursts] = useState<{ id: number; value: number }[]>([]);
   const [streak, setStreak] = useState(0);
   const [viewedIds, setViewedIds] = useState<Set<string>>(new Set());
+  const [watchedIds, setWatchedIds] = useState<Set<string> | null>(null);
+  const [playQueue, setPlayQueue] = useState<ReelCard[]>([]);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [saveToast, setSaveToast] = useState(false);
+  const [finishedQueue, setFinishedQueue] = useState(false);
   const [usage, setUsage] = useState(0);
   const touchStartY = useRef<number | null>(null);
+  const watchedRef = useRef<Set<string>>(new Set());
   const wheelLock = useRef(false);
   const isPro = isProPlan(getSubscriptionPlan());
 
-  const filteredReels = useMemo(() => (filter === "all" ? reels : reels.filter((reel) => reel.category === filter)), [filter]);
+  const filteredReels = playQueue;
   const currentReel = filteredReels[index] ?? filteredReels[0];
   const isLimitReached = !isPro && usage >= FREE_REELS_LIMIT && !viewedIds.has(currentReel?.id ?? "");
+  const isPreparing = watchedIds === null;
+  const allWatched = watchedIds !== null && (!filteredReels.length || finishedQueue);
 
   const addXp = useCallback((value: number) => {
     const id = Date.now() + Math.random();
@@ -39,34 +52,83 @@ export default function ReelsPage() {
     window.setTimeout(() => setXpBursts((items) => items.filter((item) => item.id !== id)), 1100);
   }, []);
 
+  const markWatched = useCallback((reel?: ReelCard) => {
+    if (!reel) return;
+    const next = new Set(watchedRef.current);
+    if (next.has(reel.id)) return;
+    next.add(reel.id);
+    watchedRef.current = next;
+    setWatchedIds(next);
+    window.localStorage.setItem(WATCHED_REELS_KEY, JSON.stringify([...next]));
+    window.localStorage.setItem("jarq-reels-day", new Date().toISOString().slice(0, 10));
+  }, []);
+
   const goTo = useCallback(
     (nextIndex: number, nextDirection: number) => {
       if (!filteredReels.length) return;
+      if (nextIndex >= filteredReels.length) {
+        markWatched(currentReel);
+        setFinishedQueue(true);
+        return;
+      }
+      if (nextIndex < 0) return;
+      markWatched(currentReel);
       setDirection(nextDirection);
-      setIndex((nextIndex + filteredReels.length) % filteredReels.length);
+      setIndex(nextIndex);
       setAnswerState(null);
       setSelectedOption(null);
       hapticTap();
     },
-    [filteredReels.length],
+    [currentReel, filteredReels.length, markWatched],
   );
 
   const goNext = useCallback(() => goTo(index + 1, 1), [goTo, index]);
-  const goPrev = useCallback(() => goTo(index - 1, -1), [goTo, index]);
+  const goPrev = useCallback(() => {
+    hapticTap();
+  }, []);
 
   useEffect(() => {
+    const storedWatched = readStringArray(WATCHED_REELS_KEY);
+    const storedSaved = readStringArray(SAVED_REELS_KEY);
+    const nextWatched = new Set(storedWatched);
+    watchedRef.current = nextWatched;
+    setWatchedIds(nextWatched);
+    setSavedIds(new Set(storedSaved));
+  }, []);
+
+  useEffect(() => {
+    if (watchedIds === null) return;
+    const source = filter === "all" ? reels : reels.filter((reel) => reel.category === filter);
+    const nextQueue = source.filter((reel) => !watchedRef.current.has(reel.id));
+    setPlayQueue(nextQueue);
+    setFinishedQueue(false);
     setIndex(0);
     setDirection(1);
     setAnswerState(null);
     setSelectedOption(null);
-  }, [filter]);
+  }, [filter, watchedIds === null]);
+
+  useEffect(() => {
+    if (!supabase || !user) return;
+    supabase
+      .from("saved_reels")
+      .select("reel_id")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        if (!data) return;
+        const remoteIds = data.map((row) => String((row as { reel_id: string }).reel_id));
+        const next = new Set([...readStringArray(SAVED_REELS_KEY), ...remoteIds]);
+        setSavedIds(next);
+        window.localStorage.setItem(SAVED_REELS_KEY, JSON.stringify([...next]));
+      });
+  }, [user]);
 
   useEffect(() => {
     setUsage(getTodayReelsUsage());
   }, []);
 
   useEffect(() => {
-    if (!currentReel || viewedIds.has(currentReel.id) || isLimitReached) return;
+    if (!currentReel || viewedIds.has(currentReel.id) || isLimitReached || allWatched) return;
     const timeout = window.setTimeout(() => {
       setViewedIds((ids) => new Set(ids).add(currentReel.id));
       if (!isPro) {
@@ -76,7 +138,7 @@ export default function ReelsPage() {
       addXp(5);
     }, 1200);
     return () => window.clearTimeout(timeout);
-  }, [addXp, currentReel, isLimitReached, isPro, viewedIds]);
+  }, [addXp, allWatched, currentReel, isLimitReached, isPro, viewedIds]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -129,6 +191,22 @@ export default function ReelsPage() {
     }
   }
 
+  async function saveCurrentReel() {
+    if (!currentReel) return;
+    const next = new Set(savedIds);
+    const alreadySaved = next.has(currentReel.id);
+    if (alreadySaved) return;
+    next.add(currentReel.id);
+    setSavedIds(next);
+    setSaveToast(true);
+    window.localStorage.setItem(SAVED_REELS_KEY, JSON.stringify([...next]));
+    window.setTimeout(() => setSaveToast(false), 1000);
+    hapticSuccess();
+    if (supabase && user) {
+      await supabase.from("saved_reels").insert({ user_id: user.id, reel_id: currentReel.id });
+    }
+  }
+
   function speak(text?: string) {
     if (!text || typeof window === "undefined" || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
@@ -165,21 +243,35 @@ export default function ReelsPage() {
             </button>
           ))}
         </div>
-        <Link href="/" className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-slate-950/60 backdrop-blur-xl">
-          <X size={21} />
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/reels/saved" className="hidden min-h-11 items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-4 text-xs font-black backdrop-blur-xl sm:inline-flex">
+            <Bookmark size={16} /> Сохранённые
+          </Link>
+          <Link href="/" className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-slate-950/60 backdrop-blur-xl">
+            <X size={21} />
+          </Link>
+        </div>
       </div>
 
-      <div className="absolute inset-x-4 top-[72px] z-30 flex gap-1.5">
+      <div className="absolute inset-x-4 top-[58px] z-30 grid grid-cols-2 gap-2 sm:hidden">
+        <button className="min-h-9 rounded-full bg-cyan-300 text-xs font-black text-slate-950">Для тебя</button>
+        <Link href="/reels/saved" className="grid min-h-9 place-items-center rounded-full border border-white/10 bg-slate-950/55 text-xs font-black backdrop-blur-xl">Сохранённые 🔖</Link>
+      </div>
+
+      <div className="absolute inset-x-4 top-[102px] z-30 flex gap-1.5 sm:top-[72px]">
         {filteredReels.map((reel, dotIndex) => (
-          <button key={reel.id} type="button" onClick={() => goTo(dotIndex, dotIndex > index ? 1 : -1)} className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/18" aria-label={`Открыть reel ${dotIndex + 1}`}>
+          <button key={reel.id} type="button" onClick={() => dotIndex > index ? goTo(dotIndex, 1) : undefined} className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/18" aria-label={`Открыть reel ${dotIndex + 1}`}>
             <span className={`block h-full rounded-full transition-all duration-200 ${dotIndex < index ? "w-full bg-white/70" : dotIndex === index ? "w-full bg-cyan-300 shadow-[0_0_12px_#22d3ee]" : "w-0 bg-cyan-300"}`} />
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait" custom={direction}>
-        {isLimitReached ? (
+        {isPreparing ? (
+          <PreparingCard key="preparing" />
+        ) : allWatched ? (
+          <AllWatchedCard key="all-watched" />
+        ) : isLimitReached ? (
           <LimitCard key="limit" />
         ) : (
           <motion.section
@@ -191,6 +283,23 @@ export default function ReelsPage() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className={`relative z-10 grid h-[100dvh] w-screen place-items-center px-4 py-20 ${reelShade(currentReel.category, index)}`}
           >
+            <button
+              type="button"
+              onClick={saveCurrentReel}
+              className="absolute right-4 top-32 z-40 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-slate-950/65 text-cyan-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:top-24"
+              aria-label="Сохранить Reel"
+            >
+              <motion.span animate={{ scale: savedIds.has(currentReel.id) ? [1, 1.25, 1] : 1 }} transition={{ duration: 0.35 }}>
+                {savedIds.has(currentReel.id) ? <BookmarkCheck size={22} fill="currentColor" /> : <Bookmark size={22} />}
+              </motion.span>
+            </button>
+            <AnimatePresence>
+              {saveToast ? (
+                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="absolute right-4 top-44 z-40 rounded-full bg-cyan-300 px-4 py-2 text-xs font-black text-slate-950 sm:top-36">
+                  Сохранено!
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
             <ReelContent reel={currentReel} speak={speak} />
             <QuestionBlock reel={currentReel} selectedOption={selectedOption} answerState={answerState} onAnswer={answer} />
           </motion.section>
@@ -230,12 +339,90 @@ function ReelContent({ reel, speak }: { reel: ReelCard; speak: (text?: string) =
         {reel.title}
       </div>
 
+      {reel.type === "phrase" ? (
+        <div className="rounded-[36px] border border-white/10 bg-slate-950/55 p-6 shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
+          <div className="text-5xl font-black leading-tight text-transparent [background:linear-gradient(100deg,#fff,#67e8f9,#c084fc)] [-webkit-background-clip:text]">{reel.phrase}</div>
+          <div className="mt-3 text-2xl font-black text-cyan-100">{reel.translation}</div>
+          <div className="mt-3 rounded-full bg-white/10 px-4 py-2 text-sm font-black text-slate-200">{reel.usage}</div>
+          <div className="mt-5 grid gap-2">
+            {reel.examples?.slice(0, 2).map((example) => (
+              <button key={String(example)} type="button" onClick={() => speak(String(example))} className="rounded-[22px] bg-white/10 p-4 text-left text-[18px] font-bold leading-relaxed">
+                {String(example)}
+              </button>
+            ))}
+          </div>
+          {reel.neverSay ? <div className="mt-4 rounded-[20px] border border-red-300/20 bg-red-400/10 p-3 text-sm font-bold text-red-100">Не говори: {reel.neverSay}</div> : null}
+        </div>
+      ) : null}
+
+      {reel.type === "grammar" ? (
+        <div className="rounded-[36px] border border-white/10 bg-slate-950/55 p-5 shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
+          <p className="whitespace-pre-line text-[21px] font-black leading-relaxed">{reel.explanation}</p>
+          <div className="mt-4 grid gap-3">
+            {reel.examples?.slice(0, 2).map((item, index) => {
+              if (typeof item === "string") return null;
+              return (
+                <div key={index} className="rounded-[24px] bg-white/10 p-4">
+                  <div className="text-sm font-black text-red-200">✕ {item.wrong}</div>
+                  <div className="mt-1 text-sm font-black text-emerald-200">✓ {item.right}</div>
+                  <div className="mt-2 text-xs font-bold text-slate-300">{item.why}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {reel.type === "pronunciation" ? (
+        <div className="rounded-[36px] border border-white/10 bg-slate-950/55 p-5 shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
+          <div className="grid gap-3">
+            {reel.words?.map((item) => (
+              <button key={item.word} type="button" onClick={() => speak(item.word)} className="rounded-[24px] bg-white/10 p-4 text-left">
+                <div className="text-2xl font-black text-white">{item.word}</div>
+                <div className="mt-2 grid grid-cols-2 gap-2 text-sm font-black">
+                  <span className="rounded-full bg-red-400/15 px-3 py-2 text-red-100">не {item.wrong}</span>
+                  <span className="rounded-full bg-emerald-300/15 px-3 py-2 text-emerald-100">а {item.right}</span>
+                </div>
+                <div className="mt-2 text-sm font-bold text-slate-300">{item.tip}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {reel.type === "concept" ? (
+        <div className="rounded-[36px] border border-white/10 bg-slate-950/70 p-5 shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
+          <div className="grid gap-3">
+            <pre className="overflow-x-auto rounded-[24px] border border-red-300/20 bg-red-950/20 p-4 text-[14px] font-bold leading-relaxed text-red-100"><code>{reel.before}</code></pre>
+            <pre className="overflow-x-auto rounded-[24px] border border-cyan-300/20 bg-cyan-950/20 p-4 text-[14px] font-bold leading-relaxed text-cyan-100"><code>{reel.after}</code></pre>
+          </div>
+          <p className="mt-4 rounded-[22px] bg-purple-400/12 p-4 text-[18px] font-bold leading-relaxed text-purple-50">{reel.explanation}</p>
+        </div>
+      ) : null}
+
+      {reel.type === "tip" ? (
+        <div className="rounded-[36px] border border-white/10 bg-slate-950/55 p-5 shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
+          <div className="text-[22px] font-black leading-relaxed text-cyan-50">{reel.tip}</div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-[24px] bg-red-400/10 p-4">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-red-200">Плохо</div>
+              {reel.bad?.slice(0, 3).map((item) => <code key={item} className="mt-2 block text-sm font-bold text-red-100">{item}</code>)}
+            </div>
+            <div className="rounded-[24px] bg-emerald-300/10 p-4">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-200">Лучше</div>
+              {reel.good?.slice(0, 3).map((item) => <code key={item} className="mt-2 block text-sm font-bold text-emerald-100">{item}</code>)}
+            </div>
+          </div>
+          <div className="mt-4 rounded-[20px] bg-white/10 p-3 text-sm font-bold text-slate-200">{reel.rule}</div>
+        </div>
+      ) : null}
+
       {reel.type === "word" ? (
         <div className="rounded-[36px] border border-white/10 bg-slate-950/55 p-6 text-center shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
           <div className="text-6xl font-black text-transparent [background:linear-gradient(100deg,#fff,#67e8f9,#c084fc)] [-webkit-background-clip:text]">{reel.word}</div>
           <div className="mt-3 text-[18px] font-bold text-cyan-100">{reel.transcription}</div>
           <div className="mt-3 text-2xl font-black">{reel.translation}</div>
-          <p className="mt-5 rounded-[24px] bg-white/10 p-4 text-[18px] font-semibold leading-relaxed text-slate-100">{reel.example}</p>
+          <p className="mt-5 rounded-[24px] bg-white/10 p-4 text-[18px] font-semibold leading-relaxed text-slate-100">{reel.story ?? reel.example}</p>
           <button type="button" onClick={() => speak(reel.word)} className="elastic-tap mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-cyan-300 px-5 font-black text-slate-950">
             <Volume2 size={18} />
             Озвучить
@@ -352,6 +539,45 @@ function LimitCard() {
   );
 }
 
+function PreparingCard() {
+  return (
+    <motion.section
+      key="preparing"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="relative z-10 grid h-[100dvh] place-items-center px-4"
+    >
+      <div className="h-72 w-full max-w-md animate-pulse rounded-[36px] border border-white/10 bg-slate-950/65 shadow-[0_8px_48px_rgba(0,0,0,.42)] backdrop-blur-2xl" />
+    </motion.section>
+  );
+}
+
+function AllWatchedCard() {
+  return (
+    <motion.section
+      key="all-watched"
+      initial={{ y: "100%", opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: "-100%", opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      className="relative z-10 grid h-[100dvh] place-items-center px-4"
+    >
+      <div className="max-w-md rounded-[36px] border border-cyan-300/25 bg-slate-950/75 p-6 text-center shadow-[0_8px_48px_rgba(0,0,0,.42)] backdrop-blur-2xl">
+        <div className="mx-auto grid h-20 w-20 place-items-center rounded-[30px] bg-cyan-300 text-slate-950">
+          <Check size={38} />
+        </div>
+        <h1 className="mt-5 text-3xl font-black">Ты просмотрел все Reels!</h1>
+        <p className="mt-3 text-sm font-semibold leading-relaxed jarq-muted">Новые появятся завтра 🎉 А пока можно повторить сохранённые карточки.</p>
+        <Link href="/reels/saved" className="elastic-tap mt-6 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[24px] bg-cyan-300 px-5 font-black text-slate-950">
+          <Bookmark size={18} />
+          Посмотреть сохранённые
+        </Link>
+      </div>
+    </motion.section>
+  );
+}
+
 function getTodayReelsUsage() {
   if (typeof window === "undefined") return 0;
   const today = new Date().toISOString().slice(0, 10);
@@ -362,6 +588,16 @@ function getTodayReelsUsage() {
     return parsed.date === today ? parsed.count : 0;
   } catch {
     return 0;
+  }
+}
+
+function readStringArray(key: string) {
+  if (typeof window === "undefined") return [];
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(key) || "[]");
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
   }
 }
 
