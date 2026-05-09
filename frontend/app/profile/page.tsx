@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { Award, BookOpen, CalendarCheck, Camera, Crown, Flame, GraduationCap, LogOut, Mail, Medal, Save, Settings, Sparkles, Trophy } from "lucide-react";
+import { Award, BookOpen, CalendarCheck, Camera, Crown, Flame, Gift, GraduationCap, LogOut, Mail, Medal, Save, Settings, Sparkles, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { MentorAvatarId, useAuth } from "@/components/auth/AuthProvider";
@@ -11,6 +11,7 @@ import { hapticTap } from "@/components/ui/HapticProvider";
 import { ExperienceControls } from "@/components/ui/ExperienceControls";
 import { FuturisticBackground } from "@/components/ui/FuturisticBackground";
 import { MotionPage } from "@/components/ui/MotionPage";
+import { isAmbassador, loadReferralTotal } from "@/lib/referral";
 import { getSubscriptionPlan, isProPlan, SubscriptionPlan } from "@/lib/subscription";
 
 export default function ProfilePage() {
@@ -28,12 +29,14 @@ function ProfileContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>("free");
+  const [referralTotal, setReferralTotal] = useState(0);
   const provider = user?.app_metadata?.provider ? String(user.app_metadata.provider) : "email";
   const googlePhoto = typeof user?.user_metadata?.avatar_url === "string" ? user.user_metadata.avatar_url : null;
   const displayPhoto = profilePhoto ?? googlePhoto;
   const displayName = username || profile?.username || user?.user_metadata?.name || "JARQ student";
   const isAdmin = profile?.role === "admin";
   const isPro = isProPlan(subscriptionPlan);
+  const ambassador = isAmbassador(referralTotal);
   const mentorLabel = selectedAvatarId.toUpperCase().replace("_", "-");
   const rewards = [
     { title: "Первый урок", text: "Старт в JARQ открыт", icon: Medal, active: true },
@@ -60,6 +63,16 @@ function ProfileContent() {
     window.addEventListener("jarq-subscription-change", syncSubscription);
     return () => window.removeEventListener("jarq-subscription-change", syncSubscription);
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    loadReferralTotal(user).then((total) => {
+      if (mounted) setReferralTotal(total);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -138,6 +151,11 @@ function ProfileContent() {
                         ⭐ PRO
                       </span>
                     ) : null}
+                    {ambassador ? (
+                      <span className="inline-flex items-center rounded-full bg-amber-300 px-3 py-1 text-sm font-black text-slate-950 shadow-[0_0_24px_rgba(251,191,36,0.32)]">
+                        👑 Амбассадор
+                      </span>
+                    ) : null}
                   </div>
                   <div className="mt-3 flex min-w-0 flex-col gap-2 text-sm font-semibold jarq-muted sm:flex-row sm:flex-wrap">
                     <span className="inline-flex min-w-0 items-center justify-center gap-2 rounded-full bg-white/10 px-3 py-2 sm:justify-start">
@@ -149,6 +167,21 @@ function ProfileContent() {
                 </div>
               </div>
             </motion.div>
+
+            <Link href="/referral" className="button-lift relative overflow-hidden rounded-[32px] border border-cyan-300/25 bg-cyan-300/10 p-5 shadow-[0_0_32px_rgba(34,211,238,.16)] backdrop-blur-xl">
+              <div className="absolute -right-10 -top-12 h-32 w-32 rounded-full bg-cyan-300/20 blur-2xl" />
+              <div className="relative flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-cyan-200">
+                    <Gift size={16} />
+                    Рефералы
+                  </div>
+                  <div className="mt-2 text-xl font-black">Пригласи друга — получи 7 дней Pro бесплатно →</div>
+                  <p className="mt-1 text-sm font-semibold jarq-muted">Уже приглашено: {referralTotal}</p>
+                </div>
+                <Crown className="shrink-0 text-yellow-200" size={34} />
+              </div>
+            </Link>
 
             <form onSubmit={handleSave} className="rounded-[28px] p-5 liquid-glass">
               <label htmlFor="username" className="text-sm font-bold jarq-muted">

@@ -4,6 +4,7 @@ import { JarqExperienceProvider } from "@/components/JarqExperience";
 import { HapticProvider } from "@/components/ui/HapticProvider";
 import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
 import { SiteHeader } from "@/components/home/SiteHeader";
+import { ReferralToast } from "@/components/referral/ReferralToast";
 import InstallBanner from "@/components/InstallBanner";
 import PWARegister from "@/components/PWARegister";
 import "./globals.css";
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <JarqExperienceProvider>
           <AuthProvider>
             <SiteHeader />
+            <ReferralToast />
             {children}
             <HapticProvider />
             <PWARegister />

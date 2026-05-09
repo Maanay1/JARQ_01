@@ -2,6 +2,7 @@
 
 import { Session, User } from "@supabase/supabase-js";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { processPendingReferral } from "@/lib/referral";
 import { supabase } from "@/lib/supabase";
 
 export type MentorAvatarId = "maanay" | "sensei" | "professor" | "robo_bot" | "tulpar" | "nomad" | "snow_leopard" | "astro";
@@ -84,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setProfile(normalizedProfile);
       void touchProfile(user.id, user.email);
+      void processPendingReferral(user, normalizedProfile.username);
       syncAdminRoleCookie(normalizedProfile.role);
       window.localStorage.setItem("jarq-selected-avatar", normalizedProfile.selected_avatar_id);
       if (normalizedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), normalizedProfile.username);
@@ -103,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (insertError || !insertedProfile) {
       setProfile(baseProfile);
+      void processPendingReferral(user, baseProfile.username);
       syncAdminRoleCookie(baseProfile.role);
       window.localStorage.setItem("jarq-selected-avatar", baseProfile.selected_avatar_id);
       if (baseProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), baseProfile.username);
@@ -116,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: "user",
     };
     setProfile(normalizedProfile);
+    void processPendingReferral(user, normalizedProfile.username);
     syncAdminRoleCookie(normalizedProfile.role);
     window.localStorage.setItem("jarq-selected-avatar", normalizedProfile.selected_avatar_id);
     if (normalizedProfile.username) window.localStorage.setItem(usernameStorageKey(user.id), normalizedProfile.username);
