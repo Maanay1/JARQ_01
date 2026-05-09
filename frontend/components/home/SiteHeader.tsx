@@ -43,6 +43,9 @@ export function SiteHeader() {
             <Tv size={16} />
             Медиа
           </Link>
+          <Link className="transition hover:text-cyan-200" href="/vocabulary">
+            Словарь
+          </Link>
           <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/profile">
             <UserRound size={16} />
             Профиль

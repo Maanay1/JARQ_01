@@ -5,7 +5,9 @@ import Link from "next/link";
 import { ArrowRight, Check, Code2, Headphones, HelpCircle, Loader2, Lock, Mic, Play, RotateCcw, Sparkles, Trophy, Volume2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Lesson } from "@/lib/api";
+import { getConversationLesson } from "@/lib/conversation-lessons";
 import { InteractiveStep, getInteractiveLesson } from "@/lib/interactive-lessons";
+import { ConversationLessonRunner } from "@/components/lessons/ConversationLessonRunner";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { MentorCharacter } from "@/components/mentors/MentorCharacter";
 import { hapticError, hapticSuccess } from "@/components/ui/HapticProvider";
@@ -34,6 +36,7 @@ declare global {
 }
 
 export function LessonRunner({ lesson }: LessonRunnerProps) {
+  const conversationLesson = useMemo(() => getConversationLesson(lesson.id), [lesson.id]);
   const { selectedAvatarId } = useAuth();
   const interactiveLesson = useMemo(() => getInteractiveLesson(lesson), [lesson]);
   const steps = interactiveLesson.steps;
@@ -61,6 +64,10 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
   const isLockedByLesson = !isPro && lessonNumber > 2;
   const isLockedByDailyLimit = !isPro && freeLessonsRemaining <= 0;
   const isLocked = isLockedByLesson || isLockedByDailyLimit;
+
+  if (conversationLesson) {
+    return <ConversationLessonRunner lesson={conversationLesson} />;
+  }
 
   useEffect(() => {
     if (!xpBurst) return;
