@@ -12,6 +12,9 @@ export type JarqProfile = {
   username: string | null;
   selected_avatar_id: MentorAvatarId;
   role: string | null;
+  learning_goal?: "english" | "programming" | "both" | null;
+  learning_level?: string | null;
+  daily_goal_minutes?: number | null;
 };
 
 type AuthContextValue = {
@@ -24,7 +27,7 @@ type AuthContextValue = {
   signInWithOAuth: (provider: "google" | "github") => Promise<{ error: string | null }>;
   signInWithEmail: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<Pick<JarqProfile, "username" | "selected_avatar_id">>) => Promise<void>;
+  updateProfile: (updates: Partial<Pick<JarqProfile, "username" | "selected_avatar_id" | "learning_goal" | "learning_level" | "daily_goal_minutes">>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -82,6 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username: normalizeString(rawProfile.username ?? rawProfile.name) ?? fallbackUsername,
         selected_avatar_id: normalizeAvatarId(rawProfile.selected_avatar_id ?? savedAvatar),
         role: normalizeString(rawProfile.role) ?? "user",
+        learning_goal: normalizeLearningGoal(rawProfile.learning_goal),
+        learning_level: normalizeString(rawProfile.learning_level),
+        daily_goal_minutes: normalizeNumber(rawProfile.daily_goal_minutes),
       };
       setProfile(normalizedProfile);
       void touchProfile(user.id, user.email);
@@ -185,7 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateProfile = useCallback(
-    async (updates: Partial<Pick<JarqProfile, "username" | "selected_avatar_id">>) => {
+    async (updates: Partial<Pick<JarqProfile, "username" | "selected_avatar_id" | "learning_goal" | "learning_level" | "daily_goal_minutes">>) => {
       const user = session?.user;
       const normalizedUpdates = {
         ...updates,
@@ -204,6 +210,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username: normalizedUpdates.username ?? profile?.username ?? "JARQ student",
         selected_avatar_id: normalizedUpdates.selected_avatar_id ?? profile?.selected_avatar_id ?? DEFAULT_AVATAR,
         role: profile?.role ?? "user",
+        learning_goal: normalizedUpdates.learning_goal ?? profile?.learning_goal ?? null,
+        learning_level: normalizedUpdates.learning_level ?? profile?.learning_level ?? null,
+        daily_goal_minutes: normalizedUpdates.daily_goal_minutes ?? profile?.daily_goal_minutes ?? null,
       };
 
       setProfile(nextProfile);
@@ -222,6 +231,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           username: normalizeString(rawProfile.username ?? rawProfile.name),
           selected_avatar_id: normalizeAvatarId(rawProfile.selected_avatar_id),
           role: normalizeString(rawProfile.role) ?? nextProfile.role,
+          learning_goal: normalizeLearningGoal(rawProfile.learning_goal),
+          learning_level: normalizeString(rawProfile.learning_level),
+          daily_goal_minutes: normalizeNumber(rawProfile.daily_goal_minutes),
         };
         setProfile(savedProfile);
         syncAdminRoleCookie(savedProfile.role);
@@ -273,6 +285,14 @@ function normalizeAvatarId(value: unknown): MentorAvatarId {
 
 function normalizeString(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value : null;
+}
+
+function normalizeLearningGoal(value: unknown): JarqProfile["learning_goal"] {
+  return value === "english" || value === "programming" || value === "both" ? value : null;
+}
+
+function normalizeNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 async function touchProfile(userId: string, email?: string | null) {
