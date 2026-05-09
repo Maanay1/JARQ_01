@@ -2,16 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BarChart3, BookOpen, Home, Tv, UserRound, Zap } from "lucide-react";
+import { BookOpen, Home, Tv, UserRound, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "Главная", icon: Home, match: (path: string) => path === "/" },
-  { href: "/courses", label: "Уроки", icon: BookOpen, match: (path: string) => path.startsWith("/courses") || path.startsWith("/lesson") },
+  { href: "/courses", label: "Учёба", icon: BookOpen, match: (path: string) => path.startsWith("/courses") || path.startsWith("/lesson") },
   { href: "/reels", label: "Reels", icon: Zap, match: (path: string) => path.startsWith("/reels") },
   { href: "/media", label: "Медиа", icon: Tv, match: (path: string) => path.startsWith("/media") },
-  { href: "/progress", label: "Прогресс", icon: BarChart3, match: (path: string) => path.startsWith("/progress") },
   { href: "/profile", label: "Профиль", icon: UserRound, match: (path: string) => path.startsWith("/profile") },
 ];
 
@@ -45,8 +44,8 @@ export function MobileBottomNav() {
           </div>
         </div>
       ) : null}
-      <nav className="fixed inset-x-0 bottom-0 z-50 h-[60px] border-t border-white/[0.05] bg-slate-950/65 px-2 pb-[env(safe-area-inset-bottom)] text-white shadow-[0_-8px_32px_rgba(0,0,0,0.37)] backdrop-blur-xl md:hidden">
-        <div className="mx-auto grid h-full max-w-md grid-cols-6">
+      <nav className="fixed inset-x-0 bottom-0 z-50 h-16 border-t border-white/[0.05] bg-slate-950/65 px-2 pb-[env(safe-area-inset-bottom)] text-white shadow-[0_-8px_32px_rgba(0,0,0,0.37)] backdrop-blur-xl md:hidden">
+        <div className="mx-auto grid h-full max-w-md grid-cols-5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.match(pathname);
@@ -60,7 +59,7 @@ export function MobileBottomNav() {
                   event.preventDefault();
                   setShowLessonExit(true);
                 }}
-                className={`elastic-tap relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-[20px] text-[10px] font-bold transition ${
+                className={`elastic-tap relative flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-[20px] text-[10px] font-bold transition ${
                   isActive ? "text-cyan-200" : "text-slate-400"
                 }`}
               >

@@ -41,7 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AuthProvider>
             <SiteHeader />
             <ReferralToast />
-            {children}
+            <div className="md:pl-24">{children}</div>
             <HapticProvider />
             <PWARegister />
             <InstallBanner />

@@ -1,73 +1,62 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, BookOpen, Bot, Crown, Home, Menu, Sparkles, Tv, UserRound, Zap } from "lucide-react";
+import { BookOpen, Home, Settings, Sparkles, Tv, UserRound, Zap } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
+
+const navItems = [
+  { href: "/", label: "Главная", icon: Home, match: (path: string) => path === "/" },
+  { href: "/courses", label: "Учёба", icon: BookOpen, match: (path: string) => path.startsWith("/courses") || path.startsWith("/lesson") },
+  { href: "/reels", label: "Reels", icon: Zap, match: (path: string) => path.startsWith("/reels") },
+  { href: "/media", label: "Медиа", icon: Tv, match: (path: string) => path.startsWith("/media") },
+  { href: "/profile", label: "Профиль", icon: UserRound, match: (path: string) => path.startsWith("/profile") },
+];
 
 export function SiteHeader() {
   const { profile } = useAuth();
+  const pathname = usePathname();
   const isAdmin = profile?.role === "admin";
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 hidden border-b border-white/10 bg-[#050b1a]/70 px-4 py-3 text-white backdrop-blur-2xl md:block sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3 font-bold tracking-[0.16em]">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-cyan-300 text-slate-950 shadow-[0_0_32px_rgba(34,211,238,0.32)]">
-            <Sparkles size={20} />
-          </span>
-          JARQ
-        </Link>
-        <nav className="hidden items-center gap-4 text-sm font-semibold text-slate-200 md:flex">
-          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/">
-            <Home size={16} />
-            Главная
-          </Link>
-          <Link className="transition hover:text-cyan-200" href="/courses">
+    <>
+      {isAdmin ? (
+        <div className="fixed inset-x-0 top-0 z-[70] hidden h-8 items-center justify-center border-b border-purple-200/10 bg-purple-950/85 px-4 text-xs font-black text-purple-100 backdrop-blur-xl md:flex">
+          <div className="flex w-full max-w-6xl items-center justify-between gap-3">
             <span className="inline-flex items-center gap-2">
-              <BookOpen size={16} />
-              Уроки
+              <Settings size={14} />
+              Режим администратора
             </span>
-          </Link>
-          <Link className="transition hover:text-cyan-200" href="/courses/english">
-            Английский
-          </Link>
-          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/progress">
-            <BarChart3 size={16} />
-            Прогресс
-          </Link>
-          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/reels">
-            <Zap size={16} />
-            Reels
-          </Link>
-          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/media">
-            <Tv size={16} />
-            Медиа
-          </Link>
-          <Link className="transition hover:text-cyan-200" href="/vocabulary">
-            Словарь
-          </Link>
-          <Link className="inline-flex items-center gap-2 transition hover:text-cyan-200" href="/profile">
-            <UserRound size={16} />
-            Профиль
-          </Link>
-          {isAdmin ? (
-            <Link className="inline-flex items-center gap-2 transition hover:text-purple-200" href="/admin">
-              <Crown size={16} />
-              Админ
+            <Link href="/admin" className="text-cyan-200 transition hover:text-white">
+              Открыть Admin панель →
             </Link>
-          ) : null}
-          <Link className="transition hover:text-cyan-200" href="/chat">
-            AI чат
-          </Link>
+          </div>
+        </div>
+      ) : null}
+
+      <aside className={`fixed bottom-0 left-0 top-0 z-50 hidden w-24 flex-col items-center border-r border-white/10 bg-[#050b1a]/78 px-3 pb-5 text-white shadow-[8px_0_32px_rgba(0,0,0,0.3)] backdrop-blur-2xl md:flex ${isAdmin ? "pt-12" : "pt-5"}`}>
+        <Link href="/" className="grid h-12 w-12 place-items-center rounded-[20px] bg-cyan-300 text-slate-950 shadow-[0_0_32px_rgba(34,211,238,0.32)]" aria-label="JARQ">
+          <Sparkles size={22} />
+        </Link>
+        <nav className="mt-8 flex w-full flex-1 flex-col items-stretch gap-3">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.match(pathname);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`group flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-[24px] text-[11px] font-black transition ${
+                  isActive ? "bg-cyan-300/15 text-cyan-200 shadow-[0_0_24px_rgba(34,211,238,0.18)]" : "text-slate-400 hover:bg-white/8 hover:text-white"
+                }`}
+              >
+                <Icon size={22} strokeWidth={isActive ? 2.8 : 2.2} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
-        <Link href="/chat" className="button-lift hidden min-h-10 items-center gap-2 rounded-xl bg-white/10 px-4 text-sm font-bold text-white ring-1 ring-white/15 backdrop-blur-xl hover:bg-white/15 sm:inline-flex">
-          <Bot size={17} />
-          Спросить Мааная
-        </Link>
-        <Link href="/courses" className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white ring-1 ring-white/15 md:hidden">
-          <Menu size={20} />
-        </Link>
-      </div>
-    </header>
+      </aside>
+    </>
   );
 }
