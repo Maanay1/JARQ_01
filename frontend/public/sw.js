@@ -1,5 +1,5 @@
-const CACHE_NAME = "jarq-v2";
-const STATIC_ASSETS = ["/", "/courses/english", "/courses/programming", "/manifest.json", "/icon-192.png", "/icon-512.png"];
+const CACHE_NAME = "jarq-v3";
+const STATIC_ASSETS = ["/manifest.json", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -22,12 +22,21 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => response)
+        .catch(() => caches.match("/")),
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
       return fetch(event.request)
         .then((response) => {
-          if (!response || response.status !== 200) return response;
+          if (!response || response.status !== 200 || !event.request.url.startsWith(self.location.origin)) return response;
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
           return response;
