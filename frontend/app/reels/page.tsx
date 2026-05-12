@@ -341,7 +341,7 @@ function ReelContent({ reel, speak }: { reel: ReelCard; speak: (text?: string) =
 
       {reel.type === "phrase" ? (
         <div className="rounded-[36px] border border-white/10 bg-slate-950/55 p-6 shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
-          <div className="text-5xl font-black leading-tight text-transparent [background:linear-gradient(100deg,#fff,#67e8f9,#c084fc)] [-webkit-background-clip:text]">{reel.phrase}</div>
+          <div className="break-words text-4xl font-black leading-tight text-white sm:text-5xl">{reel.phrase}</div>
           <div className="mt-3 text-2xl font-black text-cyan-100">{reel.translation}</div>
           <div className="mt-3 rounded-full bg-white/10 px-4 py-2 text-sm font-black text-slate-200">{reel.usage}</div>
           <div className="mt-5 grid gap-2">
@@ -419,7 +419,7 @@ function ReelContent({ reel, speak }: { reel: ReelCard; speak: (text?: string) =
 
       {reel.type === "word" ? (
         <div className="rounded-[36px] border border-white/10 bg-slate-950/55 p-6 text-center shadow-[0_8px_42px_rgba(0,0,0,.38)] backdrop-blur-2xl">
-          <div className="text-6xl font-black text-transparent [background:linear-gradient(100deg,#fff,#67e8f9,#c084fc)] [-webkit-background-clip:text]">{reel.word}</div>
+          <div className="break-words text-5xl font-black text-white sm:text-6xl">{reel.word}</div>
           <div className="mt-3 text-[18px] font-bold text-cyan-100">{reel.transcription}</div>
           <div className="mt-3 text-2xl font-black">{reel.translation}</div>
           <p className="mt-5 rounded-[24px] bg-white/10 p-4 text-[18px] font-semibold leading-relaxed text-slate-100">{reel.story ?? reel.example}</p>

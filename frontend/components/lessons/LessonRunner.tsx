@@ -233,7 +233,7 @@ export function LessonRunner({ lesson }: LessonRunnerProps) {
             selected={checkState === "correct"}
             className={`mx-auto h-[150px] w-[150px] ${checkState === "correct" ? "mobile-correct-bounce" : checkState === "wrong" ? "mobile-wrong-shake" : ""}`}
           />
-          <div className="rounded-[24px] border border-white/[0.08] bg-slate-950/65 p-4 text-[15px] font-semibold leading-6 text-transparent shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-xl [background:linear-gradient(90deg,#f8fafc,#a5f3fc,#d8b4fe)] [-webkit-background-clip:text] md:hidden">
+          <div className="rounded-[24px] border border-white/[0.08] bg-slate-950/65 p-4 text-[15px] font-semibold leading-6 text-slate-100 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-xl md:hidden">
             {feedback}
           </div>
         </div>

@@ -40,7 +40,7 @@ function JoinContent() {
             <Gift size={16} />
             Приглашение в JARQ
           </div>
-          <h1 className="mt-5 text-4xl font-black leading-tight text-transparent [background:linear-gradient(100deg,#f8fafc,#67e8f9,#c084fc,#fde68a)] [-webkit-background-clip:text] md:text-6xl">
+          <h1 className="mt-5 text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
             Тебя пригласил Маанай
           </h1>
           <p className="mt-4 max-w-2xl text-base font-semibold leading-7 jarq-muted">

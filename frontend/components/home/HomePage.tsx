@@ -21,8 +21,11 @@ export function HomePage() {
   const isNight = theme === "night";
 
   useEffect(() => {
-    setIsOnboarded(window.localStorage.getItem("jarq_onboarded") === "true");
-  }, [user?.id]);
+    const hasSavedOnboarding = window.localStorage.getItem("jarq_onboarded") === "true";
+    const hasProfileOnboarding = Boolean(profile?.learning_goal);
+    if (hasProfileOnboarding) window.localStorage.setItem("jarq_onboarded", "true");
+    setIsOnboarded(hasSavedOnboarding || hasProfileOnboarding);
+  }, [profile?.learning_goal, user?.id]);
 
   if (isLoading || isOnboarded === null) {
     return (
@@ -85,7 +88,7 @@ function LandingScreen() {
           <Sparkles size={16} /> JARQ AI-репетитор
         </div>
         <div className="space-y-4">
-          <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-tight text-white md:text-7xl">
+          <h1 className="max-w-4xl text-4xl font-black leading-[1.02] text-white sm:text-5xl md:text-6xl">
             Учись с Мааанием как в игре
           </h1>
           <p className="max-w-2xl text-lg font-semibold leading-8 text-slate-300 md:text-xl">
@@ -256,7 +259,7 @@ function DashboardScreen({ name }: { name: string }) {
       <div className="grid gap-5 lg:grid-cols-[1fr_0.52fr]">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={spring} className="rounded-[36px] border border-white/10 bg-slate-950/65 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.37)] backdrop-blur-xl md:p-7">
           <Kicker>Дашборд</Kicker>
-          <h1 className="mt-3 text-4xl font-black leading-tight text-white md:text-6xl">{greeting}</h1>
+          <h1 className="mt-3 text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">{greeting}</h1>
           <p className="mt-3 text-lg font-semibold text-slate-300">{name}, Маааний уже подготовил короткий маршрут на сегодня.</p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">

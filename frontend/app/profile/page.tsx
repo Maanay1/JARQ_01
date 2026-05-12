@@ -122,7 +122,7 @@ function ProfileContent() {
                   {displayPhoto ? (
                     <img src={displayPhoto} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="text-4xl font-black text-transparent [background:linear-gradient(135deg,#22d3ee,#a855f7,#f8fafc)] [-webkit-background-clip:text]">
+                    <span className="text-4xl font-black text-cyan-100">
                       {initials(displayName)}
                     </span>
                   )}
@@ -143,7 +143,7 @@ function ProfileContent() {
                     Личный кабинет
                   </div>
                   <div className="mt-3 flex min-w-0 flex-wrap items-center justify-center gap-2 sm:justify-start">
-                    <h1 className="min-w-0 text-4xl font-black leading-none text-transparent [background:linear-gradient(100deg,#f8fafc,#67e8f9,#c084fc,#f8fafc)] [-webkit-background-clip:text]">
+                    <h1 className="min-w-0 max-w-full break-words text-3xl font-black leading-tight text-white sm:text-4xl">
                       {displayName}
                     </h1>
                     {isPro ? (

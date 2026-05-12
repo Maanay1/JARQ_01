@@ -91,7 +91,7 @@ export function AdminShell({ title, eyebrow = "Admin", children }: AdminShellPro
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <div className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200">{eyebrow}</div>
-                <h1 className="mt-2 text-4xl font-black leading-tight text-transparent [background:linear-gradient(100deg,#f8fafc,#67e8f9,#c084fc)] [-webkit-background-clip:text] md:text-5xl">
+                <h1 className="mt-2 text-3xl font-black leading-tight text-white md:text-4xl">
                   {title}
                 </h1>
               </div>

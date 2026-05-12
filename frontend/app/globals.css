@@ -311,10 +311,8 @@ div {
 }
 
 .jarq-title-gradient {
-  background: linear-gradient(90deg, var(--jarq-text), #a5f3fc 48%, #d8b4fe);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--jarq-text);
+  text-shadow: 0 0 28px rgba(34, 211, 238, 0.18);
 }
 
 @media (max-width: 767px) {

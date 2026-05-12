@@ -61,12 +61,12 @@ function ReferralContent() {
       <MotionPage variant="courses" className="relative z-10 mx-auto max-w-6xl">
         <section className="overflow-hidden rounded-[36px] p-5 liquid-glass md:p-7">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-3xl">
+            <div className="min-w-0 max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
                 <Gift size={16} />
                 Реферальная программа
               </div>
-              <h1 className="mt-4 text-4xl font-black leading-tight text-transparent [background:linear-gradient(100deg,#f8fafc,#67e8f9,#c084fc,#fde68a)] [-webkit-background-clip:text] md:text-6xl">
+              <h1 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
                 Приглашай друзей и получай Pro
               </h1>
               <p className="mt-3 text-base font-semibold leading-7 jarq-muted">

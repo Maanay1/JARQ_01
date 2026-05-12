@@ -32,7 +32,7 @@ export function HeroSection() {
             AI репетитор для студенческого экспо
           </motion.div>
 
-          <h1 className="jarq-title-gradient mt-5 text-4xl font-semibold leading-none sm:mt-6 sm:text-6xl lg:text-8xl">
+          <h1 className="jarq-title-gradient mt-5 max-w-[16ch] text-4xl font-semibold leading-[1.03] sm:mt-6 sm:text-5xl lg:text-6xl">
             JARQ учит как игра, объясняет как репетитор
           </h1>
           <p className="jarq-muted mx-auto mt-5 max-w-2xl text-base leading-7 sm:text-xl sm:leading-8 lg:mx-0 lg:text-2xl">
