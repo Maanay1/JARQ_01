@@ -16,7 +16,7 @@ export function ExperienceControls() {
         whileTap={{ scale: 0.94 }}
         onMouseEnter={() => triggerHana("happy", null)}
         onClick={() => setTheme(theme === "night" ? "day" : "night")}
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/15 bg-slate-950/55 text-white shadow-[0_0_24px_rgba(34,211,238,0.18)] backdrop-blur-xl sm:h-11 sm:w-11"
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-[#26323d] bg-[#0b1117]/95 text-slate-200 shadow-[0_14px_32px_rgba(0,0,0,0.34)] backdrop-blur sm:h-11 sm:w-11"
         title={theme === "night" ? text.themeDay : text.themeNight}
       >
         {theme === "night" ? <Sun size={18} /> : <Moon size={18} />}
@@ -27,7 +27,7 @@ export function ExperienceControls() {
         whileTap={{ scale: 0.94 }}
         onMouseEnter={() => triggerHana("happy", null)}
         onClick={() => setLanguage(language === "ru" ? "en" : "ru")}
-        className="inline-flex h-10 min-w-0 items-center gap-2 rounded-full border border-white/15 bg-slate-950/55 px-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(168,85,247,0.2)] backdrop-blur-xl sm:h-11 sm:px-4"
+        className="inline-flex h-10 min-w-0 items-center gap-2 rounded-lg border border-[#26323d] bg-[#0b1117]/95 px-3 text-sm font-semibold text-slate-200 shadow-[0_14px_32px_rgba(0,0,0,0.34)] backdrop-blur sm:h-11 sm:px-4"
       >
         <Languages size={17} />
         {text.lang}

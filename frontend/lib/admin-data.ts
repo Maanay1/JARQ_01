@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { buildInversePrefetchSegmentDataRoute } from "next/dist/server/lib/router-utils/build-prefetch-segment-data-route";
 
 export type AdminProfile = {
   id: string;
@@ -153,4 +154,4 @@ function stringOrNull(value: unknown): string | null {
 
 function numberOrNull(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
+} 
